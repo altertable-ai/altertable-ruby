@@ -19,7 +19,7 @@ RSpec.configure do |config|
                                                 .with_exposed_ports(15001)
     @container.start
     puts "DEBUG: Container host: #{@container.host}"
-    puts "DEBUG: Container mapped port: #{@container.mapped_port(15000)}"
+    puts "DEBUG: Container mapped port: #{15000}"
     
     # Wait for the server to be ready
     attempts = 0
