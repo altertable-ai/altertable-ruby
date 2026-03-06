@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe Altertable do
   let(:api_key) { "test_pk_abc123" }
-  let(:base_url) { "http://127.0.0.1:15001" }
+  let(:base_url) { "http://127.0.0.1:15000" }
 
   before do
     Altertable.init(api_key, base_url: base_url)
