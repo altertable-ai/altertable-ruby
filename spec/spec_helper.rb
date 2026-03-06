@@ -2,6 +2,7 @@
 
 require "altertable"
 require "testcontainers"
+require "net/http"
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -15,25 +16,30 @@ RSpec.configure do |config|
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
   config.before(:suite) do
-    @container = Testcontainers::DockerContainer.new("altertable/mock-server:v0.1.0").with_env("PORT", "15001").with_exposed_ports(15001).with_network_mode("host").with_wait_for(Testcontainers::Wait::Log.new("Server listening on port 15001"))
-                                                .with_exposed_ports(15001)
+    @container = Testcontainers::DockerContainer.new("altertable/mock-server:v0.1.0").with_env("PORT", "15001").with_exposed_ports(15001)
     @container.start
-    puts "DEBUG: Container host: #{@container.host}"
-    puts "DEBUG: Container mapped port: #{15001}"
+    
+    port = @container.mapped_port(15001)
+    host = @container.host
+    
+    puts "DEBUG: Container host: #{host}"
+    puts "DEBUG: Container mapped port: #{port}"
     
     # Wait for the server to be ready
     attempts = 0
     begin
-      Net::HTTP.get(URI("http://#{@container.host}:#{15001}/health"))
-    rescue StandardError
+      Net::HTTP.get(URI("http://#{host}:#{port}/health"))
+    rescue StandardError => e
       attempts += 1
-      if attempts < 10
+      if attempts < 20
+        puts "DEBUG: Wait attempt #{attempts} failed: #{e.message}. Retrying..."
         sleep 1
         retry
       end
+      puts "DEBUG: Failed to reach mock server health endpoint after #{attempts} attempts"
     end
 
-    ENV["ALTERTABLE_MOCK_URL"] = "http://#{@container.host}:#{15001}"
+    ENV["ALTERTABLE_MOCK_URL"] = "http://#{host}:#{port}"
   end
 
   config.after(:suite) do
