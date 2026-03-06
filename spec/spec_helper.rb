@@ -16,7 +16,7 @@ RSpec.configure do |config|
   config.shared_context_metadata_behavior = :apply_to_host_groups
 
   config.before(:suite) do
-    @container = Testcontainers::DockerContainer.new("altertable/mock-server:v0.1.0").with_env("PORT", "15001").with_exposed_ports(15001)
+    @container = Testcontainers::DockerContainer.new("altertable/mock-server:latest").with_env("PORT", "15001").with_exposed_ports(15001)
     @container.start
     
     port = @container.mapped_port(15001)
