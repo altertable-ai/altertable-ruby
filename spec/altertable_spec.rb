@@ -1,18 +1,21 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "webmock/rspec"
 
 RSpec.describe Altertable do
   let(:api_key) { "test_api_key" }
-  let(:base_url) { ENV["ALTERTABLE_MOCK_URL"] || "http://127.0.0.1:15001" }
+  let(:base_url) { "http://mock-api.altertable.ai" }
 
   before do
     Altertable.configure do |config|
       config.api_key = api_key
       config.base_url = base_url
-      config.request_timeout = 30
-      config.on_error = ->(e) { puts "DEBUG ERROR: #{e.class} - #{e.message}" }
     end
+    
+    stub_request(:post, "#{base_url}/track").to_return(status: 200, body: '{"status":"success"}')
+    stub_request(:post, "#{base_url}/identify").to_return(status: 200, body: '{"status":"success"}')
+    stub_request(:post, "#{base_url}/alias").to_return(status: 200, body: '{"status":"success"}')
   end
 
   it "has a version number" do
@@ -27,6 +30,7 @@ RSpec.describe Altertable do
         properties: { key: "value" }
       )
       expect(response).to be_truthy
+      expect(a_request(:post, "#{base_url}/track")).to have_been_made
     end
   end
 
@@ -37,6 +41,7 @@ RSpec.describe Altertable do
         traits: { email: "test@example.com" }
       )
       expect(response).to be_truthy
+      expect(a_request(:post, "#{base_url}/identify")).to have_been_made
     end
   end
 
@@ -47,6 +52,7 @@ RSpec.describe Altertable do
         user_id: "new_id"
       )
       expect(response).to be_truthy
+      expect(a_request(:post, "#{base_url}/alias")).to have_been_made
     end
   end
 end
