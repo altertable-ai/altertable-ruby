@@ -8,7 +8,7 @@ RSpec.describe Altertable do
   let(:base_url) { ENV["ALTERTABLE_MOCK_URL"] || "http://localhost:15000" }
 
   before do
-    Altertable.init(api_key, base_url: base_url, request_timeout: 30, on_error: ->(e) { puts "DEBUG ERROR: #{e.class} - #{e.message}" }, request_timeout: 30)
+    Altertable.init(api_key, base_url: base_url, request_timeout: 30, on_error: ->(e) { puts "DEBUG ERROR: #{e.class} - #{e.message}" })
   end
 
   describe ".track" do
