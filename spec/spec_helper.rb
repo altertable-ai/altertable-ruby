@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
+require "bundler/setup"
 require "altertable"
+require_relative "support/altertable_container"
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -12,11 +14,4 @@ RSpec.configure do |config|
   end
 
   config.shared_context_metadata_behavior = :apply_to_host_groups
-
-  config.before(:suite) do
-    # For now, we skip testcontainers in CI and use a public mock server if available,
-    # or just stub the network calls for the time being to unblock CI.
-    # Long term fix involves making the mock-server image public or configuring GHCR secrets.
-    ENV["ALTERTABLE_MOCK_URL"] ||= "http://127.0.0.1:15001"
-  end
 end
