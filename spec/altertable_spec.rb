@@ -7,7 +7,7 @@ RSpec.describe Altertable do
   let(:base_url) { "http://127.0.0.1:15001" }
 
   before do
-    Altertable.init(api_key, base_url: 'http://localhost:15001')
+    Altertable.init(api_key, base_url: 'http://127.0.0.1:15001')
   end
 
   it "has a version number" do
