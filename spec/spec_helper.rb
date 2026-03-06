@@ -22,7 +22,7 @@ RSpec.configure do |config|
     # Wait for the server to be ready
     attempts = 0
     begin
-      Net::HTTP.get(URI("http://#{@container.host}:#{@container.mapped_port(15001)}/health"))
+      Net::HTTP.get(URI("http://#{@container.host}:#{@container.mapped_port(15000)}/health"))
     rescue StandardError
       attempts += 1
       if attempts < 10
@@ -31,7 +31,7 @@ RSpec.configure do |config|
       end
     end
 
-    ENV["ALTERTABLE_MOCK_URL"] = "http://#{@container.host}:#{@container.mapped_port(15001)}"
+    ENV["ALTERTABLE_MOCK_URL"] = "http://#{@container.host}:#{@container.mapped_port(15000)}"
   end
 
   config.after(:suite) do
