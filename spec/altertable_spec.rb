@@ -13,7 +13,7 @@ RSpec.describe Altertable do
 
   describe ".track" do
     it "sends a track request" do
-      response = Altertable.track("test_event", { foo: "bar" })
+      response = Altertable.track("test_event", "user_123", { foo: "bar" })
       expect(response).to be_a(Hash)
     end
   end

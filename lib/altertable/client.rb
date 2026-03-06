@@ -31,11 +31,14 @@ module Altertable
       @on_error = options[:on_error]
     end
 
-    def track(event, properties = {})
+    def track(event, distinct_id, properties = {})
+      validate_user_id!(distinct_id)
+
       payload = {
         timestamp: Time.now.utc.iso8601(3),
         event: event,
         environment: @environment,
+        distinct_id: distinct_id,
         properties: {
           "$lib": "altertable-ruby",
           "$lib_version": Altertable::VERSION

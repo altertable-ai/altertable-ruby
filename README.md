@@ -29,7 +29,7 @@ Altertable.init('your_api_key', {
 ### Tracking Events
 
 ```ruby
-Altertable.track('button_clicked', {
+Altertable.track('button_clicked', 'user_123', {
   button_id: 'signup_btn',
   page: 'home'
 })
