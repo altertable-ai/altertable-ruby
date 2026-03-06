@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ["3.2", "3.3", "3.4", "4.0"]
+
+    services:
+      altertable:
+        image: ghcr.io/altertable-ai/altertable-mock:latest
+        ports:
+          - 15001:15001
+        env:
+          ALTERTABLE_MOCK_API_KEY: test_pk_abc123
+        options: >-
+          --health-cmd "exit 0"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 3
+          --health-start-period 10s
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+
+      - name: Run tests
+        run: bundle exec rake spec
