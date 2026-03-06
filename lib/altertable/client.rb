@@ -11,14 +11,6 @@ module Altertable
     DEFAULT_TIMEOUT = 5
     DEFAULT_ENVIRONMENT = "production"
 
-    RESERVED_USER_IDS = %w[
-      anonymous_id anonymous distinct_id distinctid false guest
-      id not_authenticated true undefined user_id user
-      visitor_id visitor
-    ].freeze
-
-    RESERVED_USER_IDS_CASE_SENSITIVE = ["[object Object]", "0", "NaN", "none", "None", "null"].freeze
-
     def initialize(api_key, options = {})
       raise ConfigurationError, "API Key is required" if api_key.nil? || api_key.empty?
 
@@ -32,8 +24,6 @@ module Altertable
     end
 
     def track(event, distinct_id, properties = {})
-      validate_user_id!(distinct_id)
-
       payload = {
         timestamp: Time.now.utc.iso8601(3),
         event: event,
@@ -50,8 +40,6 @@ module Altertable
     end
 
     def identify(user_id, traits = {})
-      validate_user_id!(user_id)
-
       payload = {
         timestamp: Time.now.utc.iso8601(3),
         environment: @environment,
@@ -63,8 +51,6 @@ module Altertable
     end
 
     def alias(new_user_id, previous_id)
-      validate_user_id!(new_user_id)
-
       payload = {
         timestamp: Time.now.utc.iso8601(3),
         environment: @environment,
@@ -76,15 +62,6 @@ module Altertable
     end
 
     private
-
-    def validate_user_id!(user_id)
-      return if user_id.nil?
-
-      id_str = user_id.to_s
-      if RESERVED_USER_IDS.include?(id_str.downcase) || RESERVED_USER_IDS_CASE_SENSITIVE.include?(id_str)
-        raise ArgumentError, "Reserved User ID: #{user_id}"
-      end
-    end
 
     def post(path, payload)
       uri = URI("#{@base_url}#{path}")
