@@ -18,6 +18,8 @@ RSpec.configure do |config|
     @container = Testcontainers::DockerContainer.new("altertable/mock-server:v0.1.0").with_env("PORT", "15000").with_exposed_ports(15000).with_network_mode("host").with_wait_for(Testcontainers::Wait::Log.new("Server listening on port 15000"))
                                                 .with_exposed_ports(15001)
     @container.start
+    puts "DEBUG: Container host: #{@container.host}"
+    puts "DEBUG: Container mapped port: #{@container.mapped_port(15000)}"
     
     # Wait for the server to be ready
     attempts = 0
