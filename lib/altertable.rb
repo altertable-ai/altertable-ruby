@@ -10,8 +10,8 @@ module Altertable
       @client = Client.new(api_key, options)
     end
 
-    def track(event, distinct_id, properties = {})
-      client.track(event, distinct_id, properties)
+    def track(event, user_id, properties = {})
+      client.track(event, user_id, properties)
     end
 
     def identify(user_id, traits = {})
