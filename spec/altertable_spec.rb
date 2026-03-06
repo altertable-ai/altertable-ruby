@@ -1,13 +1,18 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "webmock/rspec"
 
 RSpec.describe Altertable do
   let(:api_key) { "pk_test_123" }
   let(:base_url) { "http://127.0.0.1:15001" }
 
   before do
-    Altertable.init(api_key, base_url: 'http://127.0.0.1:15000')
+    Altertable.init(api_key, base_url: base_url)
+    
+    stub_request(:post, "#{base_url}/track").to_return(status: 200, body: '{"status":"success"}')
+    stub_request(:post, "#{base_url}/identify").to_return(status: 200, body: '{"status":"success"}')
+    stub_request(:post, "#{base_url}/alias").to_return(status: 200, body: '{"status":"success"}')
   end
 
   it "has a version number" do
@@ -22,6 +27,7 @@ RSpec.describe Altertable do
         { key: "value" }
       )
       expect(response).to be_truthy
+      expect(a_request(:post, "#{base_url}/track")).to have_been_made
     end
   end
 
@@ -32,6 +38,7 @@ RSpec.describe Altertable do
         { email: "test@example.com" }
       )
       expect(response).to be_truthy
+      expect(a_request(:post, "#{base_url}/identify")).to have_been_made
     end
   end
 
@@ -42,6 +49,7 @@ RSpec.describe Altertable do
         "old_id"
       )
       expect(response).to be_truthy
+      expect(a_request(:post, "#{base_url}/alias")).to have_been_made
     end
   end
 end
