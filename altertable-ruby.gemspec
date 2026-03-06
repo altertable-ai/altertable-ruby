@@ -29,4 +29,10 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-performance", "~> 1.0"
   spec.add_development_dependency "rubocop-rspec", "~> 2.0"
   spec.add_development_dependency "testcontainers"
+
+  # Optional adapter support (development only)
+  spec.add_development_dependency "faraday", "~> 2.0"
+  spec.add_development_dependency "faraday-retry"
+  spec.add_development_dependency "faraday-net_http"
+  spec.add_development_dependency "httpx"
 end
