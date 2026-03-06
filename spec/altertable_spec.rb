@@ -5,7 +5,7 @@ require "json"
 
 RSpec.describe Altertable do
   let(:api_key) { "pk_test_123" }
-  let(:base_url) { ENV["ALTERTABLE_MOCK_URL"] || "http://localhost:15001" }
+  let(:base_url) { ENV["ALTERTABLE_MOCK_URL"] || "http://localhost:15000" }
 
   before do
     Altertable.init(api_key, base_url: base_url, request_timeout: 30, on_error: ->(e) { puts "DEBUG ERROR: #{e.class} - #{e.message}" }, request_timeout: 30)
