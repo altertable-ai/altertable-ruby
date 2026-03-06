@@ -1,0 +1,25 @@
+# frozen_string_literal: true
+
+Gem::Specification.new do |spec|
+  spec.name          = "altertable-ruby"
+  spec.version       = "0.1.0"
+  spec.authors       = ["Altertable"]
+  spec.email         = ["support@api.altertable.ai"]
+
+  spec.summary       = "Altertable Product Analytics Ruby SDK"
+  spec.description   = "Official Ruby client for Altertable Product Analytics"
+  spec.homepage      = "https://github.com/altertable-ai/altertable-ruby"
+  spec.license       = "MIT"
+  spec.required_ruby_version = Gem::Requirement.new(">= 2.6.0")
+
+  spec.metadata["homepage_uri"] = spec.homepage
+  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata["changelog_uri"] = "https://github.com/altertable-ai/altertable-ruby/blob/main/CHANGELOG.md"
+
+  spec.files = Dir.chdir(File.expand_path(__dir__)) do
+    `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  end
+  spec.bindir        = "exe"
+  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+  spec.require_paths = ["lib"]
+end
