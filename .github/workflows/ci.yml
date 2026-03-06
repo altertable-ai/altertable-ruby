@@ -18,7 +18,6 @@ jobs:
         image: ghcr.io/altertable-ai/altertable-mock:latest
         ports:
           - 15001:15001
-          - 15000:15000
         env:
           ALTERTABLE_MOCK_API_KEYS: test_pk_abc123
         options: >-
