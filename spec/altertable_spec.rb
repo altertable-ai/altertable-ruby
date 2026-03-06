@@ -8,10 +8,7 @@ RSpec.describe Altertable do
   let(:base_url) { "http://mock-api.altertable.ai" }
 
   before do
-    Altertable.configure do |config|
-      config.api_key = api_key
-      config.base_url = base_url
-    end
+    Altertable.init(api_key, base_url: base_url)
     
     stub_request(:post, "#{base_url}/track").to_return(status: 200, body: '{"status":"success"}')
     stub_request(:post, "#{base_url}/identify").to_return(status: 200, body: '{"status":"success"}')
@@ -25,9 +22,9 @@ RSpec.describe Altertable do
   describe ".track" do
     it "sends a track request" do
       response = Altertable.track(
-        event: "test_event",
-        user_id: "user_123",
-        properties: { key: "value" }
+        "test_event",
+        "user_123",
+        { key: "value" }
       )
       expect(response).to be_truthy
       expect(a_request(:post, "#{base_url}/track")).to have_been_made
@@ -37,8 +34,8 @@ RSpec.describe Altertable do
   describe ".identify" do
     it "sends an identify request" do
       response = Altertable.identify(
-        user_id: "user_123",
-        traits: { email: "test@example.com" }
+        "user_123",
+        { email: "test@example.com" }
       )
       expect(response).to be_truthy
       expect(a_request(:post, "#{base_url}/identify")).to have_been_made
@@ -48,8 +45,8 @@ RSpec.describe Altertable do
   describe ".alias" do
     it "sends an alias request" do
       response = Altertable.alias(
-        previous_id: "old_id",
-        user_id: "new_id"
+        "new_id",
+        "old_id"
       )
       expect(response).to be_truthy
       expect(a_request(:post, "#{base_url}/alias")).to have_been_made
