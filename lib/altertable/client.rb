@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require "net/http"
 require "json"
 require "time"
 require_relative "errors"
+require_relative "adapters"
 
 module Altertable
   class Client
@@ -21,6 +21,14 @@ module Altertable
       @release = options[:release]
       @debug = options[:debug] || false
       @on_error = options[:on_error]
+
+      # Initialize adapter
+      adapter_name = options[:adapter]
+      headers = {
+        "X-API-Key" => @api_key,
+        "Content-Type" => "application/json"
+      }
+      @adapter = select_adapter(adapter_name, { base_url: @base_url, timeout: @timeout, headers: headers })
     end
 
     def track(event, distinct_id, properties = {})
@@ -63,46 +71,60 @@ module Altertable
 
     private
 
-    def post(path, payload)
-      uri = URI("#{@base_url}#{path}")
-      req = Net::HTTP::Post.new(uri)
-      req["X-API-Key"] = @api_key
-      req["Content-Type"] = "application/json"
-      req.body = payload.to_json
-
-      begin
-        res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https", read_timeout: @timeout) do |http|
-          http.request(req)
+    def select_adapter(name, options)
+      case name
+      when :faraday
+        Adapters::FaradayAdapter.new(**options)
+      when :httpx
+        Adapters::HttpxAdapter.new(**options)
+      when :net_http
+        Adapters::NetHttpAdapter.new(**options)
+      else
+        # Auto-detect
+        if defined?(Faraday) || try_require("faraday")
+          Adapters::FaradayAdapter.new(**options)
+        elsif defined?(HTTPX) || try_require("httpx")
+          Adapters::HttpxAdapter.new(**options)
+        else
+          Adapters::NetHttpAdapter.new(**options)
         end
-
-        handle_response(res)
-      rescue StandardError => e
-        handle_error(e)
       end
     end
 
+    def try_require(gem_name)
+      require gem_name
+      true
+    rescue LoadError
+      false
+    end
+
+    def post(path, payload)
+      res = @adapter.post(path, body: payload.to_json)
+      handle_response(res)
+    rescue StandardError => e
+      handle_error(e)
+    end
+
     def handle_response(res)
-      case res.code.to_i
+      case res.status
       when 200..299
         JSON.parse(res.body) rescue {}
       when 422
         error_data = JSON.parse(res.body) rescue {}
-        raise ApiError.new("Unprocessable Entity: #{error_data["message"]}", res.code, error_data)
+        raise ApiError.new("Unprocessable Entity: #{error_data["message"]}", res.status, error_data)
       else
-        raise ApiError.new("HTTP Error: #{res.code}", res.code)
+        raise ApiError.new("HTTP Error: #{res.status}", res.status)
       end
     end
 
     def handle_error(error)
       wrapped_error = if error.is_a?(AltertableError)
                         error
-                      elsif error.is_a?(Net::ReadTimeout) || error.is_a?(Net::OpenTimeout)
-                        NetworkError.new("Timeout: #{error.message}", error)
                       else
                         AltertableError.new(error.message, error)
                       end
 
-      @on_error&.call(wrapped_error)
+      @on_error&.call(wrapped_error) if @on_error
       raise wrapped_error
     end
   end
