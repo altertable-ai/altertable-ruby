@@ -40,6 +40,7 @@ RSpec.configure do |config|
     end
 
     ENV["ALTERTABLE_MOCK_URL"] = "http://#{host}:#{port}"
+    Altertable.configure { |c| c.on_error = ->(e) { puts "DEBUG ERROR: #{e.class} - #{e.message}" } }
   end
 
   config.after(:suite) do
