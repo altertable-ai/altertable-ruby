@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, update/specs-v0.8.0]
   pull_request:
-    branches: [main]
+    branches: [main, update/specs-v0.8.0]
 
 jobs:
   test:
