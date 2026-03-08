@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v0.2.0...altertable/v0.2.1) (2026-03-08)
+
+
+### Bug Fixes
+
+* read gem version dynamically from lib/altertable/version.rb ([#12](https://github.com/altertable-ai/altertable-ruby/issues/12)) ([c2720a0](https://github.com/altertable-ai/altertable-ruby/commit/c2720a08eca08534541e2262a82239f7c3f678ec))
+
 ## [0.2.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable-v0.1.0...altertable/v0.2.0) (2026-03-08)
 
 
