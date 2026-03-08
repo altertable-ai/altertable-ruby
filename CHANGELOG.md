@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v0.2.1...altertable/v0.2.2) (2026-03-08)
+
+
+### Bug Fixes
+
+* add missing bundler/gem_tasks to Rakefile ([#16](https://github.com/altertable-ai/altertable-ruby/issues/16)) ([6d021c9](https://github.com/altertable-ai/altertable-ruby/commit/6d021c9f94d66fe491243d87ae591f0ab9303d4a)), closes [#15](https://github.com/altertable-ai/altertable-ruby/issues/15)
+
 ## [0.2.1](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v0.2.0...altertable/v0.2.1) (2026-03-08)
 
 
