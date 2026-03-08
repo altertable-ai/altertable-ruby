@@ -1,0 +1,9 @@
+{
+    "packages": {
+      ".": {
+        "release-type": "ruby",
+        "package-name": "altertable",
+        "version-file": "lib/altertable/version.rb"
+      }
+    }
+}
