@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
+require_relative "lib/altertable/version"
+
 Gem::Specification.new do |spec|
   spec.name          = "altertable"
-  spec.version       = "0.1.0"
+  spec.version       = Altertable::VERSION
   spec.authors       = ["Altertable"]
   spec.email         = ["support@api.altertable.ai"]
 
