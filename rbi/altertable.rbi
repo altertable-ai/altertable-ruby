@@ -34,14 +34,14 @@ module Altertable
     sig { params(api_key: String, options: T::Hash[Symbol, T.untyped]).void }
     def initialize(api_key, options = {}); end
 
-    sig { params(event: String, distinct_id: String, properties: T::Hash[T.any(Symbol, String), T.untyped]).returns(T.untyped) }
-    def track(event, distinct_id, properties = {}); end
+    sig { params(event: String, distinct_id: String, options: T.untyped).returns(T.untyped) }
+    def track(event, distinct_id, **options); end
 
-    sig { params(user_id: String, traits: T::Hash[T.any(Symbol, String), T.untyped]).returns(T.untyped) }
-    def identify(user_id, traits = {}); end
+    sig { params(user_id: String, options: T.untyped).returns(T.untyped) }
+    def identify(user_id, **options); end
 
-    sig { params(new_user_id: String, previous_id: String).returns(T.untyped) }
-    def alias(new_user_id, previous_id); end
+    sig { params(distinct_id: String, new_user_id: String, options: T.untyped).returns(T.untyped) }
+    def alias(distinct_id, new_user_id, **options); end
 
     private
 
@@ -119,14 +119,14 @@ module Altertable
   sig { params(api_key: String, options: T::Hash[Symbol, T.untyped]).returns(Client) }
   def self.init(api_key, options = {}); end
 
-  sig { params(event: String, user_id: String, properties: T::Hash[T.any(Symbol, String), T.untyped]).returns(T.untyped) }
-  def self.track(event, user_id, properties = {}); end
+  sig { params(event: String, distinct_id: String, options: T.untyped).returns(T.untyped) }
+  def self.track(event, distinct_id, **options); end
 
-  sig { params(user_id: String, traits: T::Hash[T.any(Symbol, String), T.untyped]).returns(T.untyped) }
-  def self.identify(user_id, traits = {}); end
+  sig { params(user_id: String, options: T.untyped).returns(T.untyped) }
+  def self.identify(user_id, **options); end
 
-  sig { params(new_user_id: String, previous_id: String).returns(T.untyped) }
-  def self.alias(new_user_id, previous_id); end
+  sig { params(distinct_id: String, new_user_id: String, options: T.untyped).returns(T.untyped) }
+  def self.alias(distinct_id, new_user_id, **options); end
 
   sig { returns(Client) }
   def self.client; end
