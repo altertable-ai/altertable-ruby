@@ -1,0 +1,20 @@
+module Altertable
+  class AltertableError < StandardError
+    attr_reader cause: Exception?
+
+    def initialize: (String message, ?Exception? cause) -> void
+  end
+
+  class ConfigurationError < AltertableError
+  end
+
+  class ApiError < AltertableError
+    attr_reader status: Integer
+    attr_reader details: ::Hash[String, untyped]
+
+    def initialize: (String message, Integer status, ?::Hash[String, untyped] details) -> void
+  end
+
+  class NetworkError < AltertableError
+  end
+end

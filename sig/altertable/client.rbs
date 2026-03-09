@@ -1,0 +1,32 @@
+module Altertable
+  class Client
+    @api_key: String
+    @base_url: String
+    @environment: String
+    @timeout: Integer | Float
+    @release: String?
+    @debug: bool
+    @on_error: Proc?
+    @adapter: untyped
+
+    DEFAULT_BASE_URL: String
+    DEFAULT_TIMEOUT: Integer
+    DEFAULT_ENVIRONMENT: String
+
+    def initialize: (String api_key, ?::Hash[Symbol, untyped] options) -> void
+
+    def track: (String event, String distinct_id, ?::Hash[Symbol | String, untyped] properties) -> untyped
+
+    def identify: (String user_id, ?::Hash[Symbol | String, untyped] traits) -> untyped
+
+    def alias: (String new_user_id, String previous_id) -> untyped
+
+    private
+
+    def select_adapter: (Symbol? name, ::Hash[Symbol, untyped] options) -> untyped
+    def try_require: (String gem_name) -> bool
+    def post: (String path, ::Hash[Symbol | String, untyped] payload) -> untyped
+    def handle_response: (untyped res) -> untyped
+    def handle_error: (Exception error) -> untyped
+  end
+end
