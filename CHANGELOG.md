@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.1.0...altertable/v1.1.1) (2026-03-09)
+
+
+### Bug Fixes
+
+* **sorbet:** trigger build ([#31](https://github.com/altertable-ai/altertable-ruby/issues/31)) ([e30cbbf](https://github.com/altertable-ai/altertable-ruby/commit/e30cbbf6aa8c9264423101f69d572d25776ebff2))
+
 ## [1.1.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.0.0...altertable/v1.1.0) (2026-03-09)
 
 
