@@ -77,7 +77,7 @@ module Altertable
       sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
       def initialize(base_url:, timeout:, headers: nil); end
 
-      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Response) }
+      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Altertable::Adapters::Response) }
       def post(path, body: nil, params: nil, &block); end
     end
 
@@ -85,12 +85,12 @@ module Altertable
       sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
       def initialize(base_url:, timeout:, headers: nil); end
 
-      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Response) }
+      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Altertable::Adapters::Response) }
       def post(path, body: nil, params: nil, &block); end
 
       private
 
-      sig { params(resp: T.untyped).returns(Response) }
+      sig { params(resp: T.untyped).returns(Altertable::Adapters::Response) }
       def wrap_response(resp); end
     end
 
@@ -98,12 +98,12 @@ module Altertable
       sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
       def initialize(base_url:, timeout:, headers: nil); end
 
-      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Response) }
+      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Altertable::Adapters::Response) }
       def post(path, body: nil, params: nil, &block); end
 
       private
 
-      sig { params(resp: T.untyped).returns(Response) }
+      sig { params(resp: T.untyped).returns(Altertable::Adapters::Response) }
       def wrap_response(resp); end
     end
 
@@ -111,7 +111,7 @@ module Altertable
       sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
       def initialize(base_url:, timeout:, headers: nil); end
 
-      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Response) }
+      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Altertable::Adapters::Response) }
       def post(path, body: nil, params: nil, &block); end
     end
   end
