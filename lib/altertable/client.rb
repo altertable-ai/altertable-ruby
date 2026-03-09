@@ -40,8 +40,8 @@ module Altertable
         environment: @environment,
         distinct_id: distinct_id,
         properties: {
-          "$lib": "altertable-ruby",
-          "$lib_version": Altertable::VERSION
+          '$lib': "altertable-ruby",
+          '$lib_version': Altertable::VERSION
         }.merge(properties)
       }
       payload[:properties]["$release"] = @release if @release
@@ -117,10 +117,18 @@ module Altertable
     def handle_response(res)
       case res.status
       when 200..299
-        JSON.parse(res.body) rescue {}
+        begin
+          JSON.parse(res.body)
+        rescue StandardError
+          {}
+        end
       when 422
-        error_data = JSON.parse(res.body) rescue {}
-        raise ApiError.new("Unprocessable Entity: #{error_data["message"]}", res.status, error_data)
+        error_data = begin
+                       JSON.parse(res.body)
+        rescue StandardError
+                       {}
+        end
+        raise ApiError.new("Unprocessable Entity: #{error_data['message']}", res.status, error_data)
       else
         raise ApiError.new("HTTP Error: #{res.status}", res.status)
       end
@@ -133,7 +141,7 @@ module Altertable
                         AltertableError.new(error.message, error)
                       end
 
-      @on_error&.call(wrapped_error) if @on_error
+      @on_error&.call(wrapped_error)
       raise wrapped_error
     end
   end
