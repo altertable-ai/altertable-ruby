@@ -49,6 +49,9 @@ GEM
     racc (1.8.1)
     rainbow (3.1.1)
     rake (13.3.1)
+    rbs (3.10.3)
+      logger
+      tsort
     regexp_parser (2.11.3)
     rspec (3.13.2)
       rspec-core (~> 3.13.0)
@@ -100,6 +103,7 @@ GEM
       testcontainers-core (= 0.2.0)
     testcontainers-core (0.2.0)
       docker-api (~> 2.2)
+    tsort (0.2.0)
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.2.0)
@@ -118,6 +122,7 @@ DEPENDENCIES
   faraday-retry
   httpx
   rake (~> 13.0)
+  rbs
   rspec (~> 3.0, >= 0)
   rubocop (~> 1.0)
   rubocop-performance (~> 1.0)
