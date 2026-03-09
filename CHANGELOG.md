@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.0.0...altertable/v1.1.0) (2026-03-09)
+
+
+### Features
+
+* plug rubocop ([#25](https://github.com/altertable-ai/altertable-ruby/issues/25)) ([1b375d5](https://github.com/altertable-ai/altertable-ruby/commit/1b375d5246d595972378e88bd61d56420a65ee39)), closes [#24](https://github.com/altertable-ai/altertable-ruby/issues/24)
+
 ## [1.0.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v0.4.0...altertable/v1.0.0) (2026-03-09)
 
 
