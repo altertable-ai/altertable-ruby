@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v0.4.0...altertable/v1.0.0) (2026-03-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* update method signatures to v0.9.0 specs ([#23](https://github.com/altertable-ai/altertable-ruby/issues/23))
+
+### Features
+
+* update method signatures to v0.9.0 specs ([#23](https://github.com/altertable-ai/altertable-ruby/issues/23)) ([1c26f52](https://github.com/altertable-ai/altertable-ruby/commit/1c26f5229aa4bd3811ac83351df06d3275496d2f))
+
 ## [0.4.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v0.3.0...altertable/v0.4.0) (2026-03-09)
 
 
