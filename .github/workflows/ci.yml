@@ -53,3 +53,5 @@ jobs:
           bundler-cache: true
       - name: Validate RBS
         run: bundle exec rbs validate
+      - name: Typecheck with Sorbet
+        run: bundle exec srb tc

@@ -1,0 +1,8 @@
+--dir
+lib
+--dir
+rbi
+--ignore
+spec
+--ignore
+vendor

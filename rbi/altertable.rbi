@@ -77,16 +77,16 @@ module Altertable
       sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
       def initialize(base_url:, timeout:, headers: nil); end
 
-      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped])).returns(Response) }
-      def post(path, body: nil, params: nil); end
+      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Response) }
+      def post(path, body: nil, params: nil, &block); end
     end
 
     class FaradayAdapter < Base
       sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
       def initialize(base_url:, timeout:, headers: nil); end
 
-      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped])).returns(Response) }
-      def post(path, body: nil, params: nil); end
+      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Response) }
+      def post(path, body: nil, params: nil, &block); end
 
       private
 
@@ -98,8 +98,8 @@ module Altertable
       sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
       def initialize(base_url:, timeout:, headers: nil); end
 
-      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped])).returns(Response) }
-      def post(path, body: nil, params: nil); end
+      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Response) }
+      def post(path, body: nil, params: nil, &block); end
 
       private
 
@@ -111,8 +111,8 @@ module Altertable
       sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
       def initialize(base_url:, timeout:, headers: nil); end
 
-      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped])).returns(Response) }
-      def post(path, body: nil, params: nil); end
+      sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Response) }
+      def post(path, body: nil, params: nil, &block); end
     end
   end
 
