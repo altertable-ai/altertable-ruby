@@ -1,0 +1,13 @@
+module Altertable
+  @client: Client?
+
+  def self.init: (String api_key, ?::Hash[Symbol, untyped] options) -> Client
+
+  def self.track: (String event, String user_id, ?::Hash[Symbol | String, untyped] properties) -> untyped
+
+  def self.identify: (String user_id, ?::Hash[Symbol | String, untyped] traits) -> untyped
+
+  def self.alias: (String new_user_id, String previous_id) -> untyped
+
+  def self.client: () -> Client
+end
