@@ -29,25 +29,25 @@ Altertable.init('your_api_key', {
 ### Tracking Events
 
 ```ruby
-Altertable.track('button_clicked', 'user_123', {
+Altertable.track('button_clicked', 'user_123', properties: {
   button_id: 'signup_btn',
   page: 'home'
-})
+}, timestamp: Time.now.utc.iso8601)
 ```
 
 ### Identifying Users
 
 ```ruby
-Altertable.identify('user_123', {
+Altertable.identify('user_123', traits: {
   email: 'user@example.com',
   name: 'John Doe'
-})
+}, anonymous_id: 'previous_anon_id')
 ```
 
 ### Alias
 
 ```ruby
-Altertable.alias('new_user_id', 'previous_anonymous_id')
+Altertable.alias('previous_anonymous_id', 'new_user_id')
 ```
 
 ## License

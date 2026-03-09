@@ -31,9 +31,11 @@ module Altertable
       @adapter = select_adapter(adapter_name, { base_url: @base_url, timeout: @timeout, headers: headers })
     end
 
-    def track(event, distinct_id, properties = {})
+    def track(event, distinct_id, **options)
+      properties = options[:properties] || {}
+      timestamp = options[:timestamp] || Time.now.utc.iso8601(3)
       payload = {
-        timestamp: Time.now.utc.iso8601(3),
+        timestamp: timestamp,
         event: event,
         environment: @environment,
         distinct_id: distinct_id,
@@ -43,26 +45,33 @@ module Altertable
         }.merge(properties)
       }
       payload[:properties]["$release"] = @release if @release
+      payload[:anonymous_id] = options[:anonymous_id] if options.key?(:anonymous_id)
+      payload[:device_id] = options[:device_id] if options.key?(:device_id)
 
       post("/track", payload)
     end
 
-    def identify(user_id, traits = {})
+    def identify(user_id, **options)
+      traits = options[:traits] || {}
+      timestamp = options[:timestamp] || Time.now.utc.iso8601(3)
       payload = {
-        timestamp: Time.now.utc.iso8601(3),
+        timestamp: timestamp,
         environment: @environment,
         distinct_id: user_id,
         traits: traits
       }
+      payload[:anonymous_id] = options[:anonymous_id] if options.key?(:anonymous_id)
+      payload[:device_id] = options[:device_id] if options.key?(:device_id)
 
       post("/identify", payload)
     end
 
-    def alias(new_user_id, previous_id)
+    def alias(distinct_id, new_user_id, **options)
+      timestamp = options[:timestamp] || Time.now.utc.iso8601(3)
       payload = {
-        timestamp: Time.now.utc.iso8601(3),
+        timestamp: timestamp,
         environment: @environment,
-        distinct_id: previous_id,
+        distinct_id: distinct_id,
         new_user_id: new_user_id
       }
 

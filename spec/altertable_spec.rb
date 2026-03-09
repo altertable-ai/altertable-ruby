@@ -20,7 +20,7 @@ RSpec.describe Altertable do
       response = Altertable.track(
         "test_event",
         "user_123",
-        { key: "value" }
+        properties: { key: "value" }
       )
       expect(response).to include("ok" => true)
     end
@@ -30,17 +30,16 @@ RSpec.describe Altertable do
     it "sends an identify request" do
       response = Altertable.identify(
         "user_123",
-        { email: "test@example.com" }
+        traits: { email: "test@example.com" }
       )
       expect(response).to include("ok" => true)
     end
   end
 
   describe ".alias" do
-    it "raises an error because the endpoint does not exist" do
-      expect {
-        Altertable.alias("new_id", "old_id")
-      }.to raise_error(Altertable::ApiError)
+    it "sends an alias request" do
+      response = Altertable.alias("old_id", "new_id")
+      expect(response).to include("ok" => true)
     end
   end
 
@@ -52,7 +51,7 @@ RSpec.describe Altertable do
 
       it "raises an ApiError when tracking" do
         expect {
-          Altertable.track("test_event", "user_123", { key: "value" })
+          Altertable.track("test_event", "user_123", properties: { key: "value" })
         }.to raise_error(Altertable::ApiError)
       end
     end

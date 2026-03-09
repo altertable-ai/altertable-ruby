@@ -15,11 +15,11 @@ module Altertable
 
     def initialize: (String api_key, ?::Hash[Symbol, untyped] options) -> void
 
-    def track: (String event, String distinct_id, ?::Hash[Symbol | String, untyped] properties) -> untyped
+    def track: (String event, String distinct_id, **untyped options) -> untyped
 
-    def identify: (String user_id, ?::Hash[Symbol | String, untyped] traits) -> untyped
+    def identify: (String user_id, **untyped options) -> untyped
 
-    def alias: (String new_user_id, String previous_id) -> untyped
+    def alias: (String distinct_id, String new_user_id, **untyped options) -> untyped
 
     private
 
