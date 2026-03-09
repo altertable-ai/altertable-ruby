@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v0.3.0...altertable/v0.4.0) (2026-03-09)
+
+
+### Features
+
+* Add Sorbet typings (RBI) ([#21](https://github.com/altertable-ai/altertable-ruby/issues/21)) ([507b41c](https://github.com/altertable-ai/altertable-ruby/commit/507b41c755d76758ed0de777acb8eeadea420758))
+
 ## [0.3.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v0.2.2...altertable/v0.3.0) (2026-03-09)
 
 
