@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v0.2.2...altertable/v0.3.0) (2026-03-09)
+
+
+### Features
+
+* add RBS typings for the SDK ([#19](https://github.com/altertable-ai/altertable-ruby/issues/19)) ([38cb619](https://github.com/altertable-ai/altertable-ruby/commit/38cb619f20a7e2c1a1090fb67f7253e122e936c4))
+
 ## [0.2.2](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v0.2.1...altertable/v0.2.2) (2026-03-08)
 
 
