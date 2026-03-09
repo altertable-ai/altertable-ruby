@@ -29,7 +29,7 @@ module Altertable
         end
       end
 
-      def post(path, body: nil, params: {}, &block)
+      def post(path, body: nil, params: {})
         resp = @conn.post(path) do |req|
           req.params = params
           req.body = body
@@ -59,7 +59,7 @@ module Altertable
         )
       end
 
-      def post(path, body: nil, params: {}, &block)
+      def post(path, body: nil, params: {})
         resp = @client.post(path, body: body, params: params)
         wrap_response(resp)
       rescue HTTPX::Error => e
@@ -84,7 +84,7 @@ module Altertable
         @uri = URI.parse(@base_url)
       end
 
-      def post(path, body: nil, params: {}, &block)
+      def post(path, body: nil, params: {})
         uri = URI.join(@uri, path)
         uri.query = URI.encode_www_form(params) unless params.empty?
 
