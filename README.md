@@ -7,12 +7,14 @@ Official Ruby SDK for Altertable Product Analytics.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'altertable-ruby'
+gem 'altertable'
 ```
 
 And then execute:
 
-    $ bundle install
+```bash
+$ bundle install
+```
 
 ## Usage
 
