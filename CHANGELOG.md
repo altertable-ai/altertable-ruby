@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.1.1...altertable/v1.1.2) (2026-03-11)
+
+
+### Bug Fixes
+
+* **readme:** correct package name ([#33](https://github.com/altertable-ai/altertable-ruby/issues/33)) ([5838578](https://github.com/altertable-ai/altertable-ruby/commit/58385785e8849cda3627bdd04e563eadab933ba3))
+
 ## [1.1.1](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.1.0...altertable/v1.1.1) (2026-03-09)
 
 
