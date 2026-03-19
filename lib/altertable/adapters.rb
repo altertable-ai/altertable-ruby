@@ -18,13 +18,10 @@ module Altertable
       def initialize(base_url:, timeout:, headers: {})
         super
         require "faraday"
-        require "faraday/retry"
-        require "faraday/net_http"
         
         @conn = Faraday.new(url: @base_url) do |f|
           @headers.each { |k, v| f.headers[k] = v }
           f.options.timeout = @timeout
-          f.request :retry, max: 3, interval: 0.05, backoff_factor: 2
           f.adapter Faraday.default_adapter
         end
       end
