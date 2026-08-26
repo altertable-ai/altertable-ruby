@@ -15,13 +15,17 @@ module Altertable
     end
 
     class FaradayAdapter < Base
-      def initialize(base_url:, timeout:, headers: {})
-        super
+      # proxy left unset (default) follows Faraday's own env-based auto-detection
+      # (HTTP_PROXY/HTTPS_PROXY/NO_PROXY). Pass `false` to disable proxying entirely for
+      # fixed, trusted destinations, or a URI string to force a specific proxy.
+      def initialize(base_url:, timeout:, headers: {}, proxy: nil)
+        super(base_url: base_url, timeout: timeout, headers: headers)
         require "faraday"
-        
+
         @conn = Faraday.new(url: @base_url) do |f|
           @headers.each { |k, v| f.headers[k] = v }
           f.options.timeout = @timeout
+          f.proxy = proxy unless proxy.nil?
           f.adapter Faraday.default_adapter
         end
       end
@@ -46,10 +50,14 @@ module Altertable
     end
 
     class HttpxAdapter < Base
-      def initialize(base_url:, timeout:, headers: {})
-        super
+      # This adapter never auto-detects HTTP_PROXY/HTTPS_PROXY (httpx requires the :proxy
+      # plugin to be loaded explicitly). `proxy: false` and the default (unset) are
+      # therefore equivalent; pass a URI string to force a specific proxy.
+      def initialize(base_url:, timeout:, headers: {}, proxy: nil)
+        super(base_url: base_url, timeout: timeout, headers: headers)
         require "httpx"
-        @client = HTTPX.plugin(:retries).with(
+        client = proxy ? HTTPX.plugin(:proxy).plugin(:retries).with(proxy: { uri: proxy }) : HTTPX.plugin(:retries)
+        @client = client.with(
           timeout: { operation_timeout: @timeout },
           headers: @headers,
           base_url: @base_url
@@ -74,11 +82,15 @@ module Altertable
     end
 
     class NetHttpAdapter < Base
-      def initialize(base_url:, timeout:, headers: {})
-        super
+      # proxy left unset (default) follows Net::HTTP's own env-based auto-detection
+      # (HTTP_PROXY/HTTPS_PROXY/NO_PROXY). Pass `false` to disable proxying entirely for
+      # fixed, trusted destinations, or a URI string to force a specific proxy.
+      def initialize(base_url:, timeout:, headers: {}, proxy: nil)
+        super(base_url: base_url, timeout: timeout, headers: headers)
         require "net/http"
         require "uri"
         @uri = URI.parse(@base_url)
+        @proxy = proxy
       end
 
       def post(path, body: nil, params: {})
@@ -89,7 +101,7 @@ module Altertable
         @headers.each { |k, v| req[k] = v }
         req.body = body if body
 
-        Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https", open_timeout: @timeout, read_timeout: @timeout) do |http|
+        Net::HTTP.start(uri.host, uri.port, *proxy_start_args, use_ssl: uri.scheme == "https", open_timeout: @timeout, read_timeout: @timeout) do |http|
           resp = http.request(req)
           Response.new(resp.code.to_i, resp.body, resp.to_hash)
         end
@@ -97,6 +109,18 @@ module Altertable
         raise Altertable::NetworkError.new("Timeout: #{e.message}", e)
       rescue StandardError => e
         raise Altertable::NetworkError.new(e.message, e)
+      end
+
+      private
+
+      # Net::HTTP.start's p_addr defaults to :ENV; returning [] here preserves that.
+      # Passing an explicit nil p_addr (i.e. [nil]) is how Net::HTTP disables proxying.
+      def proxy_start_args
+        return [] if @proxy.nil?
+        return [nil] if @proxy == false
+
+        proxy_uri = URI.parse(@proxy)
+        [proxy_uri.host, proxy_uri.port, proxy_uri.user, proxy_uri.password]
       end
     end
   end

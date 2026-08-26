@@ -19,7 +19,7 @@ module Altertable
     class FaradayAdapter < Base
       @conn: untyped
 
-      def initialize: (base_url: String, timeout: Integer | Float, ?headers: ::Hash[String, String]) -> void
+      def initialize: (base_url: String, timeout: Integer | Float, ?headers: ::Hash[String, String], ?proxy: (String | bool)?) -> void
       def post: (String path, ?body: String?, ?params: ::Hash[Symbol | String, untyped]) -> Response
 
       private
@@ -30,7 +30,7 @@ module Altertable
     class HttpxAdapter < Base
       @client: untyped
 
-      def initialize: (base_url: String, timeout: Integer | Float, ?headers: ::Hash[String, String]) -> void
+      def initialize: (base_url: String, timeout: Integer | Float, ?headers: ::Hash[String, String], ?proxy: (String | bool)?) -> void
       def post: (String path, ?body: String?, ?params: ::Hash[Symbol | String, untyped]) -> Response
 
       private
@@ -40,9 +40,14 @@ module Altertable
 
     class NetHttpAdapter < Base
       @uri: URI::HTTP | URI::HTTPS
+      @proxy: (String | bool)?
 
-      def initialize: (base_url: String, timeout: Integer | Float, ?headers: ::Hash[String, String]) -> void
+      def initialize: (base_url: String, timeout: Integer | Float, ?headers: ::Hash[String, String], ?proxy: (String | bool)?) -> void
       def post: (String path, ?body: String?, ?params: ::Hash[Symbol | String, untyped]) -> Response
+
+      private
+
+      def proxy_start_args: () -> ::Array[untyped]
     end
   end
 end

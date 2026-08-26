@@ -28,7 +28,7 @@ module Altertable
         "X-API-Key" => @api_key,
         "Content-Type" => "application/json"
       }
-      @adapter = select_adapter(adapter_name, { base_url: @base_url, timeout: @timeout, headers: headers })
+      @adapter = select_adapter(adapter_name, { base_url: @base_url, timeout: @timeout, headers: headers, proxy: options[:proxy] })
     end
 
     def track(event, distinct_id, **options)
