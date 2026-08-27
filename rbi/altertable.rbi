@@ -82,8 +82,8 @@ module Altertable
     end
 
     class FaradayAdapter < Base
-      sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
-      def initialize(base_url:, timeout:, headers: nil); end
+      sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String]), proxy: T.nilable(T.any(String, T::Boolean))).void }
+      def initialize(base_url:, timeout:, headers: nil, proxy: nil); end
 
       sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Altertable::Adapters::Response) }
       def post(path, body: nil, params: nil, &block); end
@@ -95,8 +95,8 @@ module Altertable
     end
 
     class HttpxAdapter < Base
-      sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
-      def initialize(base_url:, timeout:, headers: nil); end
+      sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String]), proxy: T.nilable(T.any(String, T::Boolean))).void }
+      def initialize(base_url:, timeout:, headers: nil, proxy: nil); end
 
       sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Altertable::Adapters::Response) }
       def post(path, body: nil, params: nil, &block); end
@@ -108,11 +108,16 @@ module Altertable
     end
 
     class NetHttpAdapter < Base
-      sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String])).void }
-      def initialize(base_url:, timeout:, headers: nil); end
+      sig { params(base_url: String, timeout: T.any(Integer, Float), headers: T.nilable(T::Hash[String, String]), proxy: T.nilable(T.any(String, T::Boolean))).void }
+      def initialize(base_url:, timeout:, headers: nil, proxy: nil); end
 
       sig { params(path: String, body: T.nilable(String), params: T.nilable(T::Hash[T.any(Symbol, String), T.untyped]), block: T.nilable(T.proc.params(arg0: T.untyped).void)).returns(Altertable::Adapters::Response) }
       def post(path, body: nil, params: nil, &block); end
+
+      private
+
+      sig { returns(T::Array[T.untyped]) }
+      def proxy_start_args; end
     end
   end
 

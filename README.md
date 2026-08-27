@@ -92,6 +92,7 @@ You can configure the client by passing options during initialization.
 | `debug` | Boolean | `false` | Enable debug logging. |
 | `on_error` | Proc | `nil` | Callback for handling errors. |
 | `adapter` | Symbol | auto-detect | HTTP adapter to use (`:faraday`, `:httpx`, `:net_http`). |
+| `proxy` | String, Boolean | adapter default | Proxy to use for requests. Pass a URI string to force a specific proxy, or `false` to disable proxying (including any `HTTP_PROXY`/`HTTPS_PROXY` environment variables) for a fixed, trusted `base_url`. Unset by default: the `:faraday` and `:net_http` adapters auto-detect a proxy from the environment as they normally would; `:httpx` never does. |
 
 ## License
 

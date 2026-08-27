@@ -26,5 +26,13 @@ RSpec.describe Altertable::Client do
         expect(adapter).to be_a(Altertable::Adapters::NetHttpAdapter)
       end
     end
+
+    context "when proxy is provided" do
+      it "threads proxy: false through to the adapter" do
+        client = described_class.new(api_key, base_url: base_url, adapter: :net_http, proxy: false)
+        adapter = client.instance_variable_get(:@adapter)
+        expect(adapter.send(:proxy_start_args)).to eq([nil])
+      end
+    end
   end
 end
