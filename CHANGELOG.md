@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.1.2...altertable/v1.2.0) (2026-08-27)
+
+
+### Features
+
+* **adapters:** support explicit proxy configuration ([#51](https://github.com/altertable-ai/altertable-ruby/issues/51)) ([309aa8f](https://github.com/altertable-ai/altertable-ruby/commit/309aa8f43c43f57cf87cf23a6d1034298612b0be))
+
 ## [1.1.2](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.1.1...altertable/v1.1.2) (2026-03-19)
 
 
