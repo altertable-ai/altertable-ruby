@@ -43,6 +43,36 @@ RSpec.describe Altertable do
     end
   end
 
+  describe ".track_batch" do
+    it "sends a batch of track events" do
+      response = Altertable.track_batch([
+        { event: "event_a", distinct_id: "user_1" },
+        { event: "event_b", distinct_id: "user_2", properties: { key: "value" } }
+      ])
+      expect(response).to include("ok" => true)
+    end
+  end
+
+  describe ".identify_batch" do
+    it "sends a batch of identify requests" do
+      response = Altertable.identify_batch([
+        { user_id: "user_1", traits: { email: "one@example.com" } },
+        { user_id: "user_2", traits: { email: "two@example.com" } }
+      ])
+      expect(response).to include("ok" => true)
+    end
+  end
+
+  describe ".alias_batch" do
+    it "sends a batch of alias requests" do
+      response = Altertable.alias_batch([
+        { distinct_id: "old_1", new_user_id: "new_1" },
+        { distinct_id: "old_2", new_user_id: "new_2" }
+      ])
+      expect(response).to include("ok" => true)
+    end
+  end
+
   describe "authentication" do
     context "with wrong API key" do
       before do

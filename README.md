@@ -79,6 +79,29 @@ Merge a previous anonymous ID with a newly identified user ID.
 Altertable.alias('anon_session_456', 'user_123')
 ```
 
+### Batching
+
+Send multiple events, identifies, or aliases in a single request. The API accepts a JSON array on the same `/track`, `/identify`, and `/alias` endpoints.
+
+```ruby
+Altertable.track_batch([
+  { event: 'signup', distinct_id: 'user_1', properties: { plan: 'pro' } },
+  { event: 'login', distinct_id: 'user_2', timestamp: '2025-06-15T14:30:00.000Z' }
+])
+
+Altertable.identify_batch([
+  { user_id: 'user_1', traits: { email: 'one@example.com' } },
+  { user_id: 'user_2', traits: { email: 'two@example.com' } }
+])
+
+Altertable.alias_batch([
+  { distinct_id: 'anon_1', new_user_id: 'user_1' },
+  { distinct_id: 'anon_2', new_user_id: 'user_2' }
+])
+```
+
+Each item uses the same fields as the single-item methods. Omitted `timestamp` values default to the current time as ISO 8601.
+
 ## Configuration
 
 You can configure the client by passing options during initialization.

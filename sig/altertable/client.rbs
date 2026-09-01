@@ -17,15 +17,21 @@ module Altertable
 
     def track: (String event, String distinct_id, **untyped options) -> untyped
 
+    def track_batch: (::Array[::Hash[Symbol | String, untyped]] events) -> untyped
+
     def identify: (String user_id, **untyped options) -> untyped
 
+    def identify_batch: (::Array[::Hash[Symbol | String, untyped]] identifies) -> untyped
+
     def alias: (String distinct_id, String new_user_id, **untyped options) -> untyped
+
+    def alias_batch: (::Array[::Hash[Symbol | String, untyped]] aliases) -> untyped
 
     private
 
     def select_adapter: (Symbol? name, ::Hash[Symbol, untyped] options) -> untyped
     def try_require: (String gem_name) -> bool
-    def post: (String path, ::Hash[Symbol | String, untyped] payload) -> untyped
+    def post: (String path, ::Hash[Symbol | String, untyped] | ::Array[::Hash[Symbol | String, untyped]] payload) -> untyped
     def handle_response: (untyped res) -> untyped
     def handle_error: (Exception error) -> untyped
   end

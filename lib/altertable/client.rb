@@ -32,50 +32,30 @@ module Altertable
     end
 
     def track(event, distinct_id, **options)
-      properties = options[:properties] || {}
-      timestamp = options[:timestamp] || Time.now.utc.iso8601(3)
-      payload = {
-        timestamp: timestamp,
-        event: event,
-        environment: @environment,
-        distinct_id: distinct_id,
-        properties: {
-          '$lib': "altertable-ruby",
-          '$lib_version': Altertable::VERSION
-        }.merge(properties)
-      }
-      payload[:properties]["$release"] = @release if @release
-      payload[:anonymous_id] = options[:anonymous_id] if options.key?(:anonymous_id)
-      payload[:device_id] = options[:device_id] if options.key?(:device_id)
+      post("/track", track_payload(event, distinct_id, options))
+    end
 
-      post("/track", payload)
+    def track_batch(events)
+      payloads = map_batch(events, "events") { |item| track_payload_from_item(item) }
+      post("/track", payloads)
     end
 
     def identify(user_id, **options)
-      traits = options[:traits] || {}
-      timestamp = options[:timestamp] || Time.now.utc.iso8601(3)
-      payload = {
-        timestamp: timestamp,
-        environment: @environment,
-        distinct_id: user_id,
-        traits: traits
-      }
-      payload[:anonymous_id] = options[:anonymous_id] if options.key?(:anonymous_id)
-      payload[:device_id] = options[:device_id] if options.key?(:device_id)
+      post("/identify", identify_payload(user_id, options))
+    end
 
-      post("/identify", payload)
+    def identify_batch(identifies)
+      payloads = map_batch(identifies, "identifies") { |item| identify_payload_from_item(item) }
+      post("/identify", payloads)
     end
 
     def alias(distinct_id, new_user_id, **options)
-      timestamp = options[:timestamp] || Time.now.utc.iso8601(3)
-      payload = {
-        timestamp: timestamp,
-        environment: @environment,
-        distinct_id: distinct_id,
-        new_user_id: new_user_id
-      }
+      post("/alias", alias_payload(distinct_id, new_user_id, options))
+    end
 
-      post("/alias", payload)
+    def alias_batch(aliases)
+      payloads = map_batch(aliases, "aliases") { |item| alias_payload_from_item(item) }
+      post("/alias", payloads)
     end
 
     private
@@ -105,6 +85,98 @@ module Altertable
       true
     rescue LoadError
       false
+    end
+
+    def map_batch(items, name, &block)
+      raise ArgumentError, "#{name} must be a non-empty Array" unless items.is_a?(Array) && !items.empty?
+
+      items.map(&block)
+    end
+
+    def item_value(item, key)
+      if item.key?(key)
+        item[key]
+      elsif item.key?(key.to_s)
+        item[key.to_s]
+      end
+    end
+
+    def item_options(item, *keys)
+      keys.each_with_object({}) do |key, opts|
+        opts[key] = item_value(item, key) if item.key?(key) || item.key?(key.to_s)
+      end
+    end
+
+    def blank?(value)
+      value.nil? || (value.respond_to?(:empty?) && value.empty?)
+    end
+
+    def default_timestamp
+      Time.now.utc.iso8601(3)
+    end
+
+    def track_payload_from_item(item)
+      event = item_value(item, :event)
+      distinct_id = item_value(item, :distinct_id)
+      raise ArgumentError, "event is required" if blank?(event)
+      raise ArgumentError, "distinct_id is required" if blank?(distinct_id)
+
+      track_payload(event, distinct_id, item_options(item, :properties, :anonymous_id, :device_id, :timestamp))
+    end
+
+    def identify_payload_from_item(item)
+      user_id = item_value(item, :user_id)
+      raise ArgumentError, "user_id is required" if blank?(user_id)
+
+      identify_payload(user_id, item_options(item, :traits, :anonymous_id, :device_id, :timestamp))
+    end
+
+    def alias_payload_from_item(item)
+      distinct_id = item_value(item, :distinct_id)
+      new_user_id = item_value(item, :new_user_id)
+      raise ArgumentError, "distinct_id is required" if blank?(distinct_id)
+      raise ArgumentError, "new_user_id is required" if blank?(new_user_id)
+
+      alias_payload(distinct_id, new_user_id, item_options(item, :timestamp))
+    end
+
+    def track_payload(event, distinct_id, options)
+      properties = options[:properties] || {}
+      payload = {
+        timestamp: options[:timestamp] || default_timestamp,
+        event: event,
+        environment: @environment,
+        distinct_id: distinct_id,
+        properties: {
+          '$lib': "altertable-ruby",
+          '$lib_version': Altertable::VERSION
+        }.merge(properties)
+      }
+      payload[:properties]["$release"] = @release if @release
+      payload[:anonymous_id] = options[:anonymous_id] if options.key?(:anonymous_id)
+      payload[:device_id] = options[:device_id] if options.key?(:device_id)
+      payload
+    end
+
+    def identify_payload(user_id, options)
+      payload = {
+        timestamp: options[:timestamp] || default_timestamp,
+        environment: @environment,
+        distinct_id: user_id,
+        traits: options[:traits] || {}
+      }
+      payload[:anonymous_id] = options[:anonymous_id] if options.key?(:anonymous_id)
+      payload[:device_id] = options[:device_id] if options.key?(:device_id)
+      payload
+    end
+
+    def alias_payload(distinct_id, new_user_id, options)
+      {
+        timestamp: options[:timestamp] || default_timestamp,
+        environment: @environment,
+        distinct_id: distinct_id,
+        new_user_id: new_user_id
+      }
     end
 
     def post(path, payload)

@@ -22,6 +22,18 @@ module Altertable
       client.alias(distinct_id, new_user_id, **options)
     end
 
+    def track_batch(events)
+      client.track_batch(events)
+    end
+
+    def identify_batch(identifies)
+      client.identify_batch(identifies)
+    end
+
+    def alias_batch(aliases)
+      client.alias_batch(aliases)
+    end
+
     def client
       raise ConfigurationError, "Altertable client not initialized. Call Altertable.init(api_key) first." unless @client
 

@@ -37,11 +37,20 @@ module Altertable
     sig { params(event: String, distinct_id: String, options: T.untyped).returns(T.untyped) }
     def track(event, distinct_id, **options); end
 
+    sig { params(events: T::Array[T::Hash[T.any(Symbol, String), T.untyped]]).returns(T.untyped) }
+    def track_batch(events); end
+
     sig { params(user_id: String, options: T.untyped).returns(T.untyped) }
     def identify(user_id, **options); end
 
+    sig { params(identifies: T::Array[T::Hash[T.any(Symbol, String), T.untyped]]).returns(T.untyped) }
+    def identify_batch(identifies); end
+
     sig { params(distinct_id: String, new_user_id: String, options: T.untyped).returns(T.untyped) }
     def alias(distinct_id, new_user_id, **options); end
+
+    sig { params(aliases: T::Array[T::Hash[T.any(Symbol, String), T.untyped]]).returns(T.untyped) }
+    def alias_batch(aliases); end
 
     private
 
@@ -51,7 +60,7 @@ module Altertable
     sig { params(gem_name: String).returns(T::Boolean) }
     def try_require(gem_name); end
 
-    sig { params(path: String, payload: T::Hash[T.any(Symbol, String), T.untyped]).returns(T.untyped) }
+    sig { params(path: String, payload: T.any(T::Hash[T.any(Symbol, String), T.untyped], T::Array[T::Hash[T.any(Symbol, String), T.untyped]])).returns(T.untyped) }
     def post(path, payload); end
 
     sig { params(res: T.untyped).returns(T.untyped) }
@@ -127,11 +136,20 @@ module Altertable
   sig { params(event: String, distinct_id: String, options: T.untyped).returns(T.untyped) }
   def self.track(event, distinct_id, **options); end
 
+  sig { params(events: T::Array[T::Hash[T.any(Symbol, String), T.untyped]]).returns(T.untyped) }
+  def self.track_batch(events); end
+
   sig { params(user_id: String, options: T.untyped).returns(T.untyped) }
   def self.identify(user_id, **options); end
 
+  sig { params(identifies: T::Array[T::Hash[T.any(Symbol, String), T.untyped]]).returns(T.untyped) }
+  def self.identify_batch(identifies); end
+
   sig { params(distinct_id: String, new_user_id: String, options: T.untyped).returns(T.untyped) }
   def self.alias(distinct_id, new_user_id, **options); end
+
+  sig { params(aliases: T::Array[T::Hash[T.any(Symbol, String), T.untyped]]).returns(T.untyped) }
+  def self.alias_batch(aliases); end
 
   sig { returns(Client) }
   def self.client; end

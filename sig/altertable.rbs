@@ -5,9 +5,15 @@ module Altertable
 
   def self.track: (String event, String distinct_id, **untyped options) -> untyped
 
+  def self.track_batch: (::Array[::Hash[Symbol | String, untyped]] events) -> untyped
+
   def self.identify: (String user_id, **untyped options) -> untyped
 
+  def self.identify_batch: (::Array[::Hash[Symbol | String, untyped]] identifies) -> untyped
+
   def self.alias: (String distinct_id, String new_user_id, **untyped options) -> untyped
+
+  def self.alias_batch: (::Array[::Hash[Symbol | String, untyped]] aliases) -> untyped
 
   def self.client: () -> Client
 end
