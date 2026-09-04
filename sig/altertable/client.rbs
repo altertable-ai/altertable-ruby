@@ -16,16 +16,22 @@ module Altertable
     def initialize: (String api_key, ?::Hash[Symbol, untyped] options) -> void
 
     def track: (String event, String distinct_id, **untyped options) -> untyped
+             | (::Hash[Symbol | String, untyped] event_payload, **untyped options) -> untyped
+             | (::Array[::Hash[Symbol | String, untyped]] event_payloads, **untyped options) -> untyped
 
     def identify: (String user_id, **untyped options) -> untyped
+                | (::Hash[Symbol | String, untyped] identify_payload, **untyped options) -> untyped
+                | (::Array[::Hash[Symbol | String, untyped]] identify_payloads, **untyped options) -> untyped
 
     def alias: (String distinct_id, String new_user_id, **untyped options) -> untyped
+             | (::Hash[Symbol | String, untyped] alias_payload, **untyped options) -> untyped
+             | (::Array[::Hash[Symbol | String, untyped]] alias_payloads, **untyped options) -> untyped
 
     private
 
     def select_adapter: (Symbol? name, ::Hash[Symbol, untyped] options) -> untyped
     def try_require: (String gem_name) -> bool
-    def post: (String path, ::Hash[Symbol | String, untyped] payload) -> untyped
+    def post: (String path, ::Hash[Symbol | String, untyped] | ::Array[::Hash[Symbol | String, untyped]] payload) -> untyped
     def handle_response: (untyped res) -> untyped
     def handle_error: (Exception error) -> untyped
   end

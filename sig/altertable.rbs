@@ -4,10 +4,16 @@ module Altertable
   def self.init: (String api_key, ?::Hash[Symbol, untyped] options) -> Client
 
   def self.track: (String event, String distinct_id, **untyped options) -> untyped
+                | (::Hash[Symbol | String, untyped] event_payload, **untyped options) -> untyped
+                | (::Array[::Hash[Symbol | String, untyped]] event_payloads, **untyped options) -> untyped
 
   def self.identify: (String user_id, **untyped options) -> untyped
+                   | (::Hash[Symbol | String, untyped] identify_payload, **untyped options) -> untyped
+                   | (::Array[::Hash[Symbol | String, untyped]] identify_payloads, **untyped options) -> untyped
 
   def self.alias: (String distinct_id, String new_user_id, **untyped options) -> untyped
+                | (::Hash[Symbol | String, untyped] alias_payload, **untyped options) -> untyped
+                | (::Array[::Hash[Symbol | String, untyped]] alias_payloads, **untyped options) -> untyped
 
   def self.client: () -> Client
 end

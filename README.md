@@ -47,37 +47,66 @@ Altertable.init('pk_live_abc123', environment: 'production', debug: true)
 
 Record an action performed by a user.
 
-`Altertable.track(event, distinct_id, **options)`
+`Altertable.track(event, distinct_id, **options)`  
+`Altertable.track(event_payload, **options)`  
+`Altertable.track(event_payloads, **options)`
 
 ```ruby
 Altertable.track('item_purchased', 'user_123', properties: {
   item_id: 'item_999',
   price: 19.99
 })
+
+Altertable.track({
+  event: 'item_purchased',
+  distinct_id: 'user_123',
+  properties: { item_id: 'item_999', price: 19.99 }
+})
+
+Altertable.track([
+  { event: 'signup', distinct_id: 'user_1', properties: { plan: 'pro' } },
+  { event: 'login', distinct_id: 'user_2', timestamp: '2025-06-15T14:30:00.000Z' }
+])
 ```
 
 ### Identifying Users
 
 Link a user ID to their traits (like email or name).
 
-`Altertable.identify(user_id, **options)`
+`Altertable.identify(user_id, **options)`  
+`Altertable.identify(identify_payload, **options)`  
+`Altertable.identify(identify_payloads, **options)`
 
 ```ruby
 Altertable.identify('user_123', traits: {
   email: 'user@example.com',
   name: 'John Doe'
 })
+
+Altertable.identify([
+  { user_id: 'user_1', traits: { email: 'one@example.com' } },
+  { user_id: 'user_2', traits: { email: 'two@example.com' } }
+])
 ```
 
 ### Alias
 
 Merge a previous anonymous ID with a newly identified user ID.
 
-`Altertable.alias(distinct_id, new_user_id, **options)`
+`Altertable.alias(distinct_id, new_user_id, **options)`  
+`Altertable.alias(alias_payload, **options)`  
+`Altertable.alias(alias_payloads, **options)`
 
 ```ruby
 Altertable.alias('anon_session_456', 'user_123')
+
+Altertable.alias([
+  { distinct_id: 'anon_1', new_user_id: 'user_1' },
+  { distinct_id: 'anon_2', new_user_id: 'user_2' }
+])
 ```
+
+A Hash payload posts one object; an Array posts a JSON array on the same endpoint. Omitted `timestamp` values default to the current time as ISO 8601.
 
 ## Configuration
 

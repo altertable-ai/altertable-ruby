@@ -34,14 +34,14 @@ module Altertable
     sig { params(api_key: String, options: T::Hash[Symbol, T.untyped]).void }
     def initialize(api_key, options = {}); end
 
-    sig { params(event: String, distinct_id: String, options: T.untyped).returns(T.untyped) }
-    def track(event, distinct_id, **options); end
+    sig { params(event: T.any(String, T::Hash[T.any(Symbol, String), T.untyped], T::Array[T::Hash[T.any(Symbol, String), T.untyped]]), distinct_id: T.nilable(String), options: T.untyped).returns(T.untyped) }
+    def track(event, distinct_id = nil, **options); end
 
-    sig { params(user_id: String, options: T.untyped).returns(T.untyped) }
+    sig { params(user_id: T.any(String, T::Hash[T.any(Symbol, String), T.untyped], T::Array[T::Hash[T.any(Symbol, String), T.untyped]]), options: T.untyped).returns(T.untyped) }
     def identify(user_id, **options); end
 
-    sig { params(distinct_id: String, new_user_id: String, options: T.untyped).returns(T.untyped) }
-    def alias(distinct_id, new_user_id, **options); end
+    sig { params(distinct_id: T.any(String, T::Hash[T.any(Symbol, String), T.untyped], T::Array[T::Hash[T.any(Symbol, String), T.untyped]]), new_user_id: T.nilable(String), options: T.untyped).returns(T.untyped) }
+    def alias(distinct_id, new_user_id = nil, **options); end
 
     private
 
@@ -51,7 +51,7 @@ module Altertable
     sig { params(gem_name: String).returns(T::Boolean) }
     def try_require(gem_name); end
 
-    sig { params(path: String, payload: T::Hash[T.any(Symbol, String), T.untyped]).returns(T.untyped) }
+    sig { params(path: String, payload: T.any(T::Hash[T.any(Symbol, String), T.untyped], T::Array[T::Hash[T.any(Symbol, String), T.untyped]])).returns(T.untyped) }
     def post(path, payload); end
 
     sig { params(res: T.untyped).returns(T.untyped) }
@@ -124,14 +124,14 @@ module Altertable
   sig { params(api_key: String, options: T::Hash[Symbol, T.untyped]).returns(Client) }
   def self.init(api_key, options = {}); end
 
-  sig { params(event: String, distinct_id: String, options: T.untyped).returns(T.untyped) }
-  def self.track(event, distinct_id, **options); end
+  sig { params(event: T.any(String, T::Hash[T.any(Symbol, String), T.untyped], T::Array[T::Hash[T.any(Symbol, String), T.untyped]]), distinct_id: T.nilable(String), options: T.untyped).returns(T.untyped) }
+  def self.track(event, distinct_id = nil, **options); end
 
-  sig { params(user_id: String, options: T.untyped).returns(T.untyped) }
+  sig { params(user_id: T.any(String, T::Hash[T.any(Symbol, String), T.untyped], T::Array[T::Hash[T.any(Symbol, String), T.untyped]]), options: T.untyped).returns(T.untyped) }
   def self.identify(user_id, **options); end
 
-  sig { params(distinct_id: String, new_user_id: String, options: T.untyped).returns(T.untyped) }
-  def self.alias(distinct_id, new_user_id, **options); end
+  sig { params(distinct_id: T.any(String, T::Hash[T.any(Symbol, String), T.untyped], T::Array[T::Hash[T.any(Symbol, String), T.untyped]]), new_user_id: T.nilable(String), options: T.untyped).returns(T.untyped) }
+  def self.alias(distinct_id, new_user_id = nil, **options); end
 
   sig { returns(Client) }
   def self.client; end
