@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.2.0...altertable/v1.3.0) (2026-09-04)
+
+
+### Features
+
+* **client:** add batch track, identify, and alias ([#53](https://github.com/altertable-ai/altertable-ruby/issues/53)) ([2aff25b](https://github.com/altertable-ai/altertable-ruby/commit/2aff25b8b6f8767da113fce38901160dffbd9733))
+
 ## [1.2.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.1.2...altertable/v1.2.0) (2026-08-27)
 
 
