@@ -16,16 +16,16 @@ module Altertable
     def initialize: (String api_key, ?::Hash[Symbol, untyped] options) -> void
 
     def track: (String event, String distinct_id, **untyped options) -> untyped
-
-    def track_batch: (::Array[::Hash[Symbol | String, untyped]] events) -> untyped
+             | (::Hash[Symbol | String, untyped] event_payload, **untyped options) -> untyped
+             | (::Array[::Hash[Symbol | String, untyped]] event_payloads, **untyped options) -> untyped
 
     def identify: (String user_id, **untyped options) -> untyped
-
-    def identify_batch: (::Array[::Hash[Symbol | String, untyped]] identifies) -> untyped
+                | (::Hash[Symbol | String, untyped] identify_payload, **untyped options) -> untyped
+                | (::Array[::Hash[Symbol | String, untyped]] identify_payloads, **untyped options) -> untyped
 
     def alias: (String distinct_id, String new_user_id, **untyped options) -> untyped
-
-    def alias_batch: (::Array[::Hash[Symbol | String, untyped]] aliases) -> untyped
+             | (::Hash[Symbol | String, untyped] alias_payload, **untyped options) -> untyped
+             | (::Array[::Hash[Symbol | String, untyped]] alias_payloads, **untyped options) -> untyped
 
     private
 

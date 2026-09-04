@@ -43,9 +43,20 @@ RSpec.describe Altertable do
     end
   end
 
-  describe ".track_batch" do
+  describe ".track with a payload hash" do
+    it "sends a track request" do
+      response = Altertable.track({
+        event: "test_event",
+        distinct_id: "user_123",
+        properties: { key: "value" }
+      })
+      expect(response).to include("ok" => true)
+    end
+  end
+
+  describe ".track with a payload array" do
     it "sends a batch of track events" do
-      response = Altertable.track_batch([
+      response = Altertable.track([
         { event: "event_a", distinct_id: "user_1" },
         { event: "event_b", distinct_id: "user_2", properties: { key: "value" } }
       ])
@@ -53,9 +64,9 @@ RSpec.describe Altertable do
     end
   end
 
-  describe ".identify_batch" do
+  describe ".identify with a payload array" do
     it "sends a batch of identify requests" do
-      response = Altertable.identify_batch([
+      response = Altertable.identify([
         { user_id: "user_1", traits: { email: "one@example.com" } },
         { user_id: "user_2", traits: { email: "two@example.com" } }
       ])
@@ -63,9 +74,9 @@ RSpec.describe Altertable do
     end
   end
 
-  describe ".alias_batch" do
+  describe ".alias with a payload array" do
     it "sends a batch of alias requests" do
-      response = Altertable.alias_batch([
+      response = Altertable.alias([
         { distinct_id: "old_1", new_user_id: "new_1" },
         { distinct_id: "old_2", new_user_id: "new_2" }
       ])

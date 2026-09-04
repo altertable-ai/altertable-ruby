@@ -31,31 +31,40 @@ module Altertable
       @adapter = select_adapter(adapter_name, { base_url: @base_url, timeout: @timeout, headers: headers, proxy: options[:proxy] })
     end
 
-    def track(event, distinct_id, **options)
-      post("/track", track_payload(event, distinct_id, options))
-    end
-
-    def track_batch(events)
-      payloads = map_batch(events, "events") { |item| track_payload_from_item(item) }
-      post("/track", payloads)
+    def track(event, distinct_id = nil, **options)
+      case event
+      when Array
+        payloads = map_batch(event, "events") { |item| track_payload_from_item(merge_payload(item, options)) }
+        post("/track", payloads)
+      when Hash
+        post("/track", track_payload_from_item(merge_payload(event, options)))
+      else
+        post("/track", track_payload(event, distinct_id, options))
+      end
     end
 
     def identify(user_id, **options)
-      post("/identify", identify_payload(user_id, options))
+      case user_id
+      when Array
+        payloads = map_batch(user_id, "identifies") { |item| identify_payload_from_item(merge_payload(item, options)) }
+        post("/identify", payloads)
+      when Hash
+        post("/identify", identify_payload_from_item(merge_payload(user_id, options)))
+      else
+        post("/identify", identify_payload(user_id, options))
+      end
     end
 
-    def identify_batch(identifies)
-      payloads = map_batch(identifies, "identifies") { |item| identify_payload_from_item(item) }
-      post("/identify", payloads)
-    end
-
-    def alias(distinct_id, new_user_id, **options)
-      post("/alias", alias_payload(distinct_id, new_user_id, options))
-    end
-
-    def alias_batch(aliases)
-      payloads = map_batch(aliases, "aliases") { |item| alias_payload_from_item(item) }
-      post("/alias", payloads)
+    def alias(distinct_id, new_user_id = nil, **options)
+      case distinct_id
+      when Array
+        payloads = map_batch(distinct_id, "aliases") { |item| alias_payload_from_item(merge_payload(item, options)) }
+        post("/alias", payloads)
+      when Hash
+        post("/alias", alias_payload_from_item(merge_payload(distinct_id, options)))
+      else
+        post("/alias", alias_payload(distinct_id, new_user_id, options))
+      end
     end
 
     private
@@ -91,6 +100,12 @@ module Altertable
       raise ArgumentError, "#{name} must be a non-empty Array" unless items.is_a?(Array) && !items.empty?
 
       items.map(&block)
+    end
+
+    def merge_payload(item, options)
+      return item if options.empty?
+
+      item.merge(options)
     end
 
     def item_value(item, key)

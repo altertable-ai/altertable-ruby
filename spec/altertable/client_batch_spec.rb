@@ -31,9 +31,38 @@ RSpec.describe Altertable::Client do
     end
   end
 
-  describe "#track_batch" do
+  describe "#track" do
+    it "posts a single event from positional arguments" do
+      client.track("signup", "u1", properties: { plan: "pro" }, timestamp: "2025-06-15T14:30:00.000Z")
+
+      expect(adapter.calls.size).to eq(1)
+      expect(adapter.calls.first[:path]).to eq("/track")
+      payload = adapter.calls.first[:body]
+      expect(payload).to include(
+        "event" => "signup",
+        "distinct_id" => "u1",
+        "environment" => "production",
+        "timestamp" => "2025-06-15T14:30:00.000Z"
+      )
+      expect(payload["properties"]).to include("plan" => "pro", "$lib" => "altertable-ruby")
+    end
+
+    it "posts a single event from a payload hash" do
+      client.track({
+        event: "signup",
+        distinct_id: "u1",
+        properties: { plan: "pro" },
+        timestamp: "2025-06-15T14:30:00.000Z"
+      })
+
+      payload = adapter.calls.first[:body]
+      expect(payload).to be_a(Hash)
+      expect(payload).to include("event" => "signup", "distinct_id" => "u1")
+      expect(payload["properties"]).to include("plan" => "pro", "$release" => "1.2.3")
+    end
+
     it "posts an array of track payloads in one request" do
-      client.track_batch([
+      client.track([
         { event: "signup", distinct_id: "u1", properties: { plan: "pro" }, timestamp: "2025-06-15T14:30:00.000Z" },
         { event: "login", distinct_id: "u2", timestamp: "2025-06-15T14:31:00.000Z", anonymous_id: "anon-1" }
       ])
@@ -59,30 +88,43 @@ RSpec.describe Altertable::Client do
     end
 
     it "defaults omitted timestamps to ISO 8601" do
-      client.track_batch([{ event: "signup", distinct_id: "u1" }])
+      client.track([{ event: "signup", distinct_id: "u1" }])
 
       timestamp = adapter.calls.first[:body].first["timestamp"]
       expect { Time.iso8601(timestamp) }.not_to raise_error
     end
 
     it "returns the parsed response" do
-      response = client.track_batch([{ event: "signup", distinct_id: "u1" }])
+      response = client.track([{ event: "signup", distinct_id: "u1" }])
       expect(response).to include("ok" => true)
     end
 
     it "raises ArgumentError for an empty list" do
-      expect { client.track_batch([]) }.to raise_error(ArgumentError, /empty/)
+      expect { client.track([]) }.to raise_error(ArgumentError, /empty/)
       expect(adapter.calls).to be_empty
     end
 
-    it "raises ArgumentError when event is missing" do
-      expect { client.track_batch([{ distinct_id: "u1" }]) }.to raise_error(ArgumentError, /event/)
+    it "raises ArgumentError when event is missing from a payload" do
+      expect { client.track([{ distinct_id: "u1" }]) }.to raise_error(ArgumentError, /event/)
     end
   end
 
-  describe "#identify_batch" do
+  describe "#identify" do
+    it "posts a single identify from a payload hash" do
+      client.identify({
+        user_id: "u1",
+        traits: { email: "a@example.com" },
+        timestamp: "2025-06-15T14:30:00.000Z"
+      })
+
+      payload = adapter.calls.first[:body]
+      expect(payload).to be_a(Hash)
+      expect(payload).to include("distinct_id" => "u1", "timestamp" => "2025-06-15T14:30:00.000Z")
+      expect(payload["traits"]).to include("email" => "a@example.com")
+    end
+
     it "posts an array of identify payloads" do
-      client.identify_batch([
+      client.identify([
         { user_id: "u1", traits: { email: "a@example.com" }, timestamp: "2025-06-15T14:30:00.000Z" },
         { user_id: "u2", device_id: "device-1", timestamp: "2025-06-15T14:31:00.000Z" }
       ])
@@ -100,13 +142,25 @@ RSpec.describe Altertable::Client do
     end
 
     it "raises ArgumentError for an empty list" do
-      expect { client.identify_batch([]) }.to raise_error(ArgumentError, /empty/)
+      expect { client.identify([]) }.to raise_error(ArgumentError, /empty/)
     end
   end
 
-  describe "#alias_batch" do
+  describe "#alias" do
+    it "posts a single alias from a payload hash" do
+      client.alias({ distinct_id: "anon-1", new_user_id: "u1", timestamp: "2025-06-15T14:30:00.000Z" })
+
+      payload = adapter.calls.first[:body]
+      expect(payload).to be_a(Hash)
+      expect(payload).to include(
+        "distinct_id" => "anon-1",
+        "new_user_id" => "u1",
+        "timestamp" => "2025-06-15T14:30:00.000Z"
+      )
+    end
+
     it "posts an array of alias payloads" do
-      client.alias_batch([
+      client.alias([
         { distinct_id: "anon-1", new_user_id: "u1", timestamp: "2025-06-15T14:30:00.000Z" },
         { distinct_id: "anon-2", new_user_id: "u2" }
       ])
@@ -124,7 +178,7 @@ RSpec.describe Altertable::Client do
     end
 
     it "raises ArgumentError for an empty list" do
-      expect { client.alias_batch([]) }.to raise_error(ArgumentError, /empty/)
+      expect { client.alias([]) }.to raise_error(ArgumentError, /empty/)
     end
   end
 end
