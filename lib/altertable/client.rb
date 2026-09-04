@@ -99,6 +99,10 @@ module Altertable
     def map_batch(items, name, &block)
       raise ArgumentError, "#{name} must be a non-empty Array" unless items.is_a?(Array) && !items.empty?
 
+      items.each_with_index do |item, index|
+        raise ArgumentError, "#{name}[#{index}] must be a Hash" unless item.is_a?(Hash)
+      end
+
       items.map(&block)
     end
 

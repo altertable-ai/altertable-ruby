@@ -107,6 +107,33 @@ RSpec.describe Altertable::Client do
     it "raises ArgumentError when event is missing from a payload" do
       expect { client.track([{ distinct_id: "u1" }]) }.to raise_error(ArgumentError, /event/)
     end
+
+    it "raises ArgumentError when a batch item is not a Hash" do
+      expect { client.track([nil]) }.to raise_error(ArgumentError, "events[0] must be a Hash")
+      expect { client.track([{ event: "signup", distinct_id: "u1" }, "nope"]) }.to raise_error(ArgumentError, "events[1] must be a Hash")
+      expect(adapter.calls).to be_empty
+    end
+
+    it "accepts string-key hashes in a batch" do
+      client.track([
+        {
+          "event" => "signup",
+          "distinct_id" => "u1",
+          "properties" => { "plan" => "pro" },
+          "timestamp" => "2025-06-15T14:30:00.000Z",
+          "anonymous_id" => "anon-1"
+        }
+      ])
+
+      payload = adapter.calls.first[:body].first
+      expect(payload).to include(
+        "event" => "signup",
+        "distinct_id" => "u1",
+        "anonymous_id" => "anon-1",
+        "timestamp" => "2025-06-15T14:30:00.000Z"
+      )
+      expect(payload["properties"]).to include("plan" => "pro")
+    end
   end
 
   describe "#identify" do
@@ -144,6 +171,18 @@ RSpec.describe Altertable::Client do
     it "raises ArgumentError for an empty list" do
       expect { client.identify([]) }.to raise_error(ArgumentError, /empty/)
     end
+
+    it "raises ArgumentError when a batch item is not a Hash" do
+      expect { client.identify([nil]) }.to raise_error(ArgumentError, "identifies[0] must be a Hash")
+    end
+
+    it "accepts string-key hashes in a batch" do
+      client.identify([
+        { "user_id" => "u1", "traits" => { "email" => "a@example.com" }, "timestamp" => "2025-06-15T14:30:00.000Z" }
+      ])
+
+      expect(adapter.calls.first[:body].first).to include("distinct_id" => "u1", "timestamp" => "2025-06-15T14:30:00.000Z")
+    end
   end
 
   describe "#alias" do
@@ -179,6 +218,18 @@ RSpec.describe Altertable::Client do
 
     it "raises ArgumentError for an empty list" do
       expect { client.alias([]) }.to raise_error(ArgumentError, /empty/)
+    end
+
+    it "raises ArgumentError when a batch item is not a Hash" do
+      expect { client.alias([nil]) }.to raise_error(ArgumentError, "aliases[0] must be a Hash")
+    end
+
+    it "accepts string-key hashes in a batch" do
+      client.alias([
+        { "distinct_id" => "anon-1", "new_user_id" => "u1", "timestamp" => "2025-06-15T14:30:00.000Z" }
+      ])
+
+      expect(adapter.calls.first[:body].first).to include("distinct_id" => "anon-1", "new_user_id" => "u1")
     end
   end
 end
