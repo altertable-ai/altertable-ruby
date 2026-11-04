@@ -47,7 +47,8 @@ Altertable.init('pk_live_abc123', environment: 'production', debug: true)
 
 Record an action performed by a user.
 
-`Altertable.track(event, distinct_id, **options)`  
+`Altertable.track(event, distinct_id = nil, **options)`
+
 `Altertable.track(event_payload, **options)`  
 `Altertable.track(event_payloads, **options)`
 
@@ -68,6 +69,50 @@ Altertable.track([
   { event: 'login', distinct_id: 'user_2', timestamp: '2025-06-15T14:30:00.000Z' }
 ])
 ```
+
+### Audience Measurement
+
+Product analytics is the default. Select audience measurement when creating a client:
+
+```ruby
+Altertable.init('pk_live_abc123', mode: :audience)
+Altertable.track('Docs Opened', properties: {
+  '$url' => 'https://example.com/docs?campaign=launch',
+  '$referer' => 'https://search.example/results?q=docs',
+  section: 'installation'
+})
+Altertable.track({ event: 'Install Copied', properties: { package: 'ruby' } })
+Altertable.track([{ event: 'Docs Opened' }, { event: 'Install Copied' }])
+```
+
+Audience events send only `mode: "audience"`, `event`, `timestamp`, and `properties`.
+No `distinct_id`, `anonymous_id`, `device_id`, `session_id`, or `environment` is sent,
+even if supplied by the caller. The API key determines the audience environment.
+`identify` and `alias` return `nil` without sending a request, including for hash
+and batch inputs. Enable `debug: true` during development to warn about these calls.
+
+The SDK reduces `$url` to its HTTP(S) origin and path, reduces `$referer` to its
+origin, and removes `$viewport`. Credentials, query strings, and fragments are
+removed from these built-in URLs; invalid or unsupported URLs become `nil`.
+Both symbol and string property keys are supported. Library/version and configured
+release metadata are retained. Custom properties and URL paths can still contain
+personal information: callers are responsible for choosing appropriate values.
+
+Mode is fixed for each `Altertable::Client`. Create a new client or call
+`Altertable.init` again to change it. Per-event options cannot override mode.
+Both `:product`/`:audience` and `"product"`/`"audience"` are accepted; other values
+raise `Altertable::ConfigurationError` before replacing the global client.
+
+This server SDK sends requests immediately. It has no persistent identity,
+sessions, disk queue, consent manager, automatic page capture, or event transforms.
+Failed requests are not queued for replay across clients. Gate calls according to
+your application's consent policy. All HTTP transports (`:faraday`, `:httpx`, and
+`:net_http`) are supported; their existing timeout, proxy, and retry behavior applies.
+
+Audience visitor hashing on the backend uses the IP address and User-Agent of the
+SDK's HTTP request, which describe your server rather than the end user's browser.
+Server-side audience events therefore cannot reliably measure distinct end-user
+visitors. This SDK does not forward end-user IP/User-Agent headers.
 
 ### Identifying Users
 
@@ -114,7 +159,8 @@ You can configure the client by passing options during initialization.
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `environment` | String | `"production"` | Environment name (e.g., `production`, `development`). |
+| `mode` | Symbol, String | `:product` | Collection mode: `:product` or `:audience`. Fixed for the client lifetime. |
+| `environment` | String | `"production"` | Product environment name (e.g., `production`, `development`). Omitted in audience mode; the API key selects its environment. |
 | `base_url` | String | `"https://api.altertable.ai"` | Base URL for API requests. |
 | `request_timeout` | Integer | `5` | Request timeout in seconds. |
 | `release` | String | `nil` | Application release version (e.g., commit hash). |

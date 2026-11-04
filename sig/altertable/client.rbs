@@ -1,5 +1,6 @@
 module Altertable
   class Client
+    @mode: :product | :audience
     @api_key: String
     @base_url: String
     @environment: String
@@ -15,7 +16,7 @@ module Altertable
 
     def initialize: (String api_key, ?::Hash[Symbol, untyped] options) -> void
 
-    def track: (String event, String distinct_id, **untyped options) -> untyped
+    def track: (String event, ?String? distinct_id, **untyped options) -> untyped
              | (::Hash[Symbol | String, untyped] event_payload, **untyped options) -> untyped
              | (::Array[::Hash[Symbol | String, untyped]] event_payloads, **untyped options) -> untyped
 
@@ -28,6 +29,10 @@ module Altertable
              | (::Array[::Hash[Symbol | String, untyped]] alias_payloads, **untyped options) -> untyped
 
     private
+
+    def reject_identity_call?: () -> bool
+    def audience_payload: (::Hash[Symbol, untyped] payload) -> ::Hash[Symbol, untyped]
+    def sanitize_url: (untyped value, ?origin_only: bool) -> String?
 
     def select_adapter: (Symbol? name, ::Hash[Symbol, untyped] options) -> untyped
     def try_require: (String gem_name) -> bool

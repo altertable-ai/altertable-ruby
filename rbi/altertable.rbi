@@ -48,6 +48,15 @@ module Altertable
     sig { params(name: T.nilable(Symbol), options: T::Hash[Symbol, T.untyped]).returns(T.untyped) }
     def select_adapter(name, options); end
 
+    sig { returns(T::Boolean) }
+    def reject_identity_call?; end
+
+    sig { params(payload: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
+    def audience_payload(payload); end
+
+    sig { params(value: T.untyped, origin_only: T::Boolean).returns(T.nilable(String)) }
+    def sanitize_url(value, origin_only: false); end
+
     sig { params(gem_name: String).returns(T::Boolean) }
     def try_require(gem_name); end
 

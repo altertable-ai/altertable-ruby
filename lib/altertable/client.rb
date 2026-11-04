@@ -2,6 +2,7 @@
 
 require "json"
 require "time"
+require "uri"
 require_relative "errors"
 require_relative "adapters"
 
@@ -14,6 +15,12 @@ module Altertable
     def initialize(api_key, options = {})
       raise ConfigurationError, "API Key is required" if api_key.nil? || api_key.empty?
 
+      @mode = case options.fetch(:mode, :product)
+              when :product, "product" then :product
+              when :audience, "audience" then :audience
+              else
+                raise ConfigurationError, 'Invalid tracking mode. Use "product" or "audience".'
+              end
       @api_key = api_key
       @base_url = options[:base_url] || DEFAULT_BASE_URL
       @environment = options[:environment] || DEFAULT_ENVIRONMENT
@@ -44,6 +51,8 @@ module Altertable
     end
 
     def identify(user_id, **options)
+      return if reject_identity_call?
+
       case user_id
       when Array
         payloads = map_batch(user_id, "identifies") { |item| identify_payload_from_item(merge_payload(item, options)) }
@@ -56,6 +65,8 @@ module Altertable
     end
 
     def alias(distinct_id, new_user_id = nil, **options)
+      return if reject_identity_call?
+
       case distinct_id
       when Array
         payloads = map_batch(distinct_id, "aliases") { |item| alias_payload_from_item(merge_payload(item, options)) }
@@ -68,6 +79,13 @@ module Altertable
     end
 
     private
+
+    def reject_identity_call?
+      return false unless @mode == :audience
+
+      warn "[Altertable] identify() and alias() calls are ignored in audience mode." if @debug
+      true
+    end
 
     def select_adapter(name, options)
       case name
@@ -138,7 +156,7 @@ module Altertable
       event = item_value(item, :event)
       distinct_id = item_value(item, :distinct_id)
       raise ArgumentError, "event is required" if blank?(event)
-      raise ArgumentError, "distinct_id is required" if blank?(distinct_id)
+      raise ArgumentError, "distinct_id is required" if @mode == :product && blank?(distinct_id)
 
       track_payload(event, distinct_id, item_options(item, :properties, :anonymous_id, :device_id, :timestamp))
     end
@@ -172,9 +190,37 @@ module Altertable
         }.merge(properties)
       }
       payload[:properties]["$release"] = @release if @release
+      return audience_payload(payload) if @mode == :audience
+
       payload[:anonymous_id] = options[:anonymous_id] if options.key?(:anonymous_id)
       payload[:device_id] = options[:device_id] if options.key?(:device_id)
       payload
+    end
+
+    # Select wire fields explicitly so per-event options cannot override client policy.
+    def audience_payload(payload)
+      properties = payload[:properties].transform_keys(&:to_s)
+      properties["$url"] = sanitize_url(properties["$url"])
+      properties["$referer"] = sanitize_url(properties["$referer"], origin_only: true)
+      properties.delete("$viewport")
+      { mode: "audience", event: payload[:event], timestamp: payload[:timestamp], properties: properties }
+    end
+
+    def sanitize_url(value, origin_only: false)
+      return unless value.is_a?(String)
+
+      url = URI.parse(value)
+      return unless url.is_a?(URI::HTTP) && url.host && !url.host.empty?
+      return unless url.port.between?(0, 65_535)
+
+      origin = "#{url.scheme}://#{url.host.downcase}"
+      origin += ":#{url.port}" if url.port != url.default_port
+      return origin if origin_only
+
+      path = url.path.empty? ? "/" : url.path
+      "#{origin}#{path}"
+    rescue URI::InvalidURIError
+      nil
     end
 
     def identify_payload(user_id, options)
