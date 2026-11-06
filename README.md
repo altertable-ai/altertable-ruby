@@ -72,47 +72,34 @@ Altertable.track([
 
 ### Audience Measurement
 
-Product analytics is the default. Select audience measurement when creating a client:
+Use an environment-bound Product Analytics API key and `mode: :audience` to collect events without client identity fields:
 
 ```ruby
 Altertable.init('pk_live_abc123', mode: :audience)
 Altertable.track('Docs Opened', properties: {
   '$url' => 'https://example.com/docs?campaign=launch',
-  '$referer' => 'https://search.example/results?q=docs',
   section: 'installation'
 })
-Altertable.track({ event: 'Install Copied', properties: { package: 'ruby' } })
 Altertable.track([{ event: 'Docs Opened' }, { event: 'Install Copied' }])
 ```
 
-Audience events send only `mode: "audience"`, `event`, `timestamp`, and `properties`.
-No `distinct_id`, `anonymous_id`, `device_id`, `session_id`, or `environment` is sent,
-even if supplied by the caller. The API key determines the audience environment.
-`identify` and `alias` return `nil` without sending a request, including for hash
-and batch inputs. Enable `debug: true` during development to warn about these calls.
+Product mode is the default. Create a new client or call `Altertable.init` again to
+change modes. Audience events omit user, anonymous, device, session, and environment
+fields across scalar, hash, and batch calls. The API key selects the environment;
+legacy unbound keys cannot be used. `identify` and `alias` return `nil` without
+sending requests, with warnings when `debug` is enabled.
 
-The SDK reduces `$url` to its HTTP(S) origin and path, reduces `$referer` to its
-origin, and removes `$viewport`. Credentials, query strings, and fragments are
-removed from these built-in URLs; invalid or unsupported URLs become `nil`.
-Both symbol and string property keys are supported. Library/version and configured
-release metadata are retained. Custom properties and URL paths can still contain
-personal information: callers are responsible for choosing appropriate values.
+Audience mode removes `$viewport`, reduces `$url` to HTTP(S) origin plus path, and
+reduces `$referer` to origin. Invalid URLs become `nil`. Symbol and string property
+keys are supported. Custom properties and URL paths can still contain personal
+information; choose them accordingly.
 
-Mode is fixed for each `Altertable::Client`. Create a new client or call
-`Altertable.init` again to change it. Per-event options cannot override mode.
-Both `:product`/`:audience` and `"product"`/`"audience"` are accepted; other values
-raise `Altertable::ConfigurationError` before replacing the global client.
+Gate calls on your application's consent decisions. Events are sent immediately;
+failed sends are not queued for replay. Faraday, HTTPX, and Net::HTTP are supported.
 
-This server SDK sends requests immediately. It has no persistent identity,
-sessions, disk queue, consent manager, automatic page capture, or event transforms.
-Failed requests are not queued for replay across clients. Gate calls according to
-your application's consent policy. All HTTP transports (`:faraday`, `:httpx`, and
-`:net_http`) are supported; their existing timeout, proxy, and retry behavior applies.
-
-Audience visitor hashing on the backend uses the IP address and User-Agent of the
-SDK's HTTP request, which describe your server rather than the end user's browser.
-Server-side audience events therefore cannot reliably measure distinct end-user
-visitors. This SDK does not forward end-user IP/User-Agent headers.
+The backend derives audience visitors from the request IP and User-Agent. For this
+server SDK, those describe your server, so these events cannot reliably measure
+distinct browser visitors. End-user request headers are not forwarded automatically.
 
 ### Identifying Users
 
