@@ -22,7 +22,7 @@ Initialize the client and track your first event. Call `track()` to record an ac
 require 'altertable'
 
 # Initialize the Altertable client
-Altertable.init('pk_live_abc123', environment: 'production')
+Altertable.init('pk_live_abc123')
 
 # Track an event
 Altertable.track('button_clicked', 'user_123', properties: {
@@ -40,7 +40,7 @@ Initialize the global Altertable client instance.
 `Altertable.init(api_key, options = {})`
 
 ```ruby
-Altertable.init('pk_live_abc123', environment: 'production', debug: true)
+Altertable.init('pk_live_abc123', debug: true)
 ```
 
 ### Tracking Events
@@ -79,7 +79,7 @@ Altertable.track('Docs Opened', properties: { section: 'installation' })
 ```
 
 Audience events send only `event`, `timestamp`, and `properties`; distinct, anonymous,
-device, session, and environment fields are dropped. `identify` and `alias` are ignored.
+device, and session fields are dropped. `identify` and `alias` are ignored.
 Requests come from your server, so they cannot distinguish browser visitors.
 
 ### Identifying Users
@@ -128,7 +128,7 @@ You can configure the client by passing options during initialization.
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `mode` | Symbol, String | `:product` | Collection mode: `:product` or `:audience`. Fixed for the client lifetime. |
-| `environment` | String | `"production"` | Product environment name (e.g., `production`, `development`). Omitted in audience mode; the API key selects its environment. |
+| `environment` | String | — | Deprecated and ignored. It is accepted for compatibility but never sent; use an environment-bound Product Analytics API key. |
 | `base_url` | String | `"https://api.altertable.ai"` | Base URL for API requests. |
 | `request_timeout` | Integer | `5` | Request timeout in seconds. |
 | `release` | String | `nil` | Application release version (e.g., commit hash). |
@@ -136,6 +136,22 @@ You can configure the client by passing options during initialization.
 | `on_error` | Proc | `nil` | Callback for handling errors. |
 | `adapter` | Symbol | auto-detect | HTTP adapter to use (`:faraday`, `:httpx`, `:net_http`). |
 | `proxy` | String, Boolean | adapter default | Proxy to use for requests. Pass a URI string to force a specific proxy, or `false` to disable proxying (including any `HTTP_PROXY`/`HTTPS_PROXY` environment variables) for a fixed, trusted `base_url`. Unset by default: the `:faraday` and `:net_http` adapters auto-detect a proxy from the environment as they normally would; `:httpx` never does. |
+
+### Migrating from `environment`
+
+Create or select a Product Analytics API key bound to the target environment, then
+remove `environment:` from initialization. The SDK still accepts the option during
+the transition, including hash and batch event inputs, but ignores it and omits the
+top-level field from every request. A legacy unbound key cannot deliver after this
+migration because the backend has no environment to select.
+
+```ruby
+# Before
+Altertable.init('legacy-key', environment: 'staging')
+
+# After
+Altertable.init('staging-environment-bound-key')
+```
 
 ## License
 

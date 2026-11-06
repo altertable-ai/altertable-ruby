@@ -9,6 +9,8 @@ module Altertable
   class Client
     DEFAULT_BASE_URL = "https://api.altertable.ai"
     DEFAULT_TIMEOUT = 5
+    # @deprecated Environments are selected by the Product Analytics API key.
+    # Retained so applications that reference the public constant continue to load.
     DEFAULT_ENVIRONMENT = "production"
 
     def initialize(api_key, options = {})
@@ -22,7 +24,7 @@ module Altertable
               end
       @api_key = api_key
       @base_url = options[:base_url] || DEFAULT_BASE_URL
-      @environment = options[:environment] || DEFAULT_ENVIRONMENT
+      warn "[Altertable] The environment is determined by your API key. Remove the :environment option." if options.key?(:environment) && options[:debug]
       @timeout = options[:request_timeout] || DEFAULT_TIMEOUT
       @release = options[:release]
       @debug = options[:debug] || false
@@ -178,7 +180,6 @@ module Altertable
       payload = {
         timestamp: options[:timestamp] || default_timestamp,
         event: event,
-        environment: @environment,
         distinct_id: distinct_id,
         properties: {
           '$lib': "altertable-ruby",
@@ -201,7 +202,6 @@ module Altertable
     def identify_payload(user_id, options)
       payload = {
         timestamp: options[:timestamp] || default_timestamp,
-        environment: @environment,
         distinct_id: user_id,
         traits: options[:traits] || {}
       }
@@ -213,17 +213,32 @@ module Altertable
     def alias_payload(distinct_id, new_user_id, options)
       {
         timestamp: options[:timestamp] || default_timestamp,
-        environment: @environment,
         distinct_id: distinct_id,
         new_user_id: new_user_id
       }
     end
 
     def post(path, payload)
-      res = @adapter.post(path, body: payload.to_json)
+      res = @adapter.post(path, body: remove_deprecated_environment(payload).to_json)
       handle_response(res)
     rescue StandardError => e
       handle_error(e)
+    end
+
+    # Keep accepting legacy payload hashes, but never let their top-level routing
+    # field reach the API. Properties named "environment" remain event data.
+    def remove_deprecated_environment(payload)
+      case payload
+      when Array
+        payload.map { |item| remove_deprecated_environment(item) }
+      when Hash
+        payload.dup.tap do |item|
+          item.delete(:environment)
+          item.delete("environment")
+        end
+      else
+        payload
+      end
     end
 
     def handle_response(res)

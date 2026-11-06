@@ -6,6 +6,10 @@
 
 * Add `mode: :audience` to collect events without identity fields. Product mode remains the default.
 
+### Changed
+
+* Deprecated `environment` constructor arguments are accepted and ignored; the Product Analytics API key selects the environment, and unbound keys must be replaced before upgrading.
+
 
 ## [1.3.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.2.0...altertable/v1.3.0) (2026-09-04)
 
