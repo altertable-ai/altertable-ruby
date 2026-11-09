@@ -51,14 +51,8 @@ module Altertable
     sig { returns(T::Boolean) }
     def reject_identity_call?; end
 
-    sig { void }
-    def validate_audience_endpoint!; end
-
     sig { params(payload: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
     def audience_payload(payload); end
-
-    sig { params(value: T.untyped, origin_only: T::Boolean).returns(T.nilable(String)) }
-    def sanitize_url(value, origin_only: false); end
 
     sig { params(gem_name: String).returns(T::Boolean) }
     def try_require(gem_name); end

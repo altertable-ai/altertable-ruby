@@ -2,7 +2,6 @@
 
 require "json"
 require "time"
-require "uri"
 require_relative "errors"
 require_relative "adapters"
 
@@ -23,7 +22,6 @@ module Altertable
               end
       @api_key = api_key
       @base_url = options[:base_url] || DEFAULT_BASE_URL
-      validate_audience_endpoint! if @mode == :audience
       @environment = options[:environment] || DEFAULT_ENVIRONMENT
       @timeout = options[:request_timeout] || DEFAULT_TIMEOUT
       @release = options[:release]
@@ -86,15 +84,6 @@ module Altertable
 
       warn "[Altertable] identify() and alias() calls are ignored in audience mode." if @debug
       true
-    end
-
-    def validate_audience_endpoint!
-      endpoint = URI.parse(@base_url)
-      return unless endpoint.user || endpoint.password
-
-      raise ConfigurationError, "Audience endpoints cannot include credentials"
-    rescue URI::InvalidURIError
-      raise ConfigurationError, "Audience endpoint must be a valid URL"
     end
 
     def select_adapter(name, options)
@@ -209,28 +198,7 @@ module Altertable
 
     # Select wire fields explicitly so per-event options cannot override client policy.
     def audience_payload(payload)
-      properties = payload[:properties].transform_keys(&:to_s)
-      properties["$url"] = sanitize_url(properties["$url"])
-      properties["$referer"] = sanitize_url(properties["$referer"], origin_only: true)
-      properties.delete("$viewport")
-      { mode: "audience", event: payload[:event], timestamp: payload[:timestamp], properties: properties }
-    end
-
-    def sanitize_url(value, origin_only: false)
-      return unless value.is_a?(String)
-
-      url = URI.parse(value)
-      return unless url.is_a?(URI::HTTP) && url.host && !url.host.empty?
-      return unless url.port.between?(0, 65_535)
-
-      origin = "#{url.scheme}://#{url.host.downcase}"
-      origin += ":#{url.port}" if url.port != url.default_port
-      return origin if origin_only
-
-      path = url.path.empty? ? "/" : url.path
-      "#{origin}#{path}"
-    rescue URI::InvalidURIError
-      nil
+      { mode: "audience", event: payload[:event], timestamp: payload[:timestamp], properties: payload[:properties] }
     end
 
     def identify_payload(user_id, options)

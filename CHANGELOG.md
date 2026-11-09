@@ -4,7 +4,7 @@
 
 ### Features
 
-* Add audience collection mode for scalar, hash, and batch tracking, with identity suppression, restricted wire fields, and built-in URL sanitization. Product mode remains the default.
+* Add `mode: :audience` to collect events without identity fields. Product mode remains the default.
 
 
 ## [1.3.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.2.0...altertable/v1.3.0) (2026-09-04)

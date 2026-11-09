@@ -25,7 +25,6 @@ RSpec.describe Altertable::Client, "audience mode" do
     expect(payload["mode"]).to eq("audience")
     expect { Time.iso8601(payload["timestamp"]) }.not_to raise_error
     expect(payload["properties"]).to include("$lib" => "altertable-ruby", "$lib_version" => Altertable::VERSION)
-    expect(payload["properties"]).not_to have_key("$viewport")
   end
 
   it "omits all identity fields and environment from scalar events" do
@@ -52,34 +51,12 @@ RSpec.describe Altertable::Client, "audience mode" do
     expect_audience(calls.last[:body].first)
   end
 
-  it "sanitizes symbol and string built-ins after merging caller properties without mutating them" do
-    properties = { :"$url" => "https://user:password@SITE.example:443/docs?token=secret#hash",
-                   "$referer" => "http://user:password@search.example:8080/private?token=secret",
-                   :"$viewport" => "1234x987", "$viewport" => "another", section: "intro" }.freeze
-    client.track({ event: "Opened", properties: properties }, timestamp: "2026-11-04T10:00:00.000Z")
-    payload = calls.last[:body]
-    expect(payload["timestamp"]).to eq("2026-11-04T10:00:00.000Z")
-    expect(payload["properties"]).to include("$url" => "https://site.example/docs", "$referer" => "http://search.example:8080", "section" => "intro")
-    expect(payload["properties"]).not_to have_key("$viewport")
-    expect(properties[:"$url"]).to include("secret")
-  end
-
-  [nil, 123, "not a URL?token=secret", "javascript:secret", "/relative?token=secret", "https://", "https://host:bad/path", "https://host:99999/path"].each do |url|
-    it "discards unsupported URL and referrer values: #{url.inspect}" do
-      client.track("Opened", properties: { "$url" => url, "$referer" => url })
-      expect(calls.last[:body]["properties"]).to include("$url" => nil, "$referer" => nil)
-    end
-  end
-
-  it "preserves paths, IPv6 hosts, and non-default ports without extracting query parameters" do
-    client.track("Opened", properties: { "$url" => "http://[::1]:8080/a%20b?email=private#secret", "$referer" => "https://search.example" })
-    expect(calls.last[:body]["properties"]).to include("$url" => "http://[::1]:8080/a%20b", "$referer" => "https://search.example")
-    expect(calls.last[:body]["properties"]).not_to have_key("email")
-  end
-
-  it "retains caller properties and release metadata without claiming to scrub custom PII" do
-    build_client(mode: :audience, release: "1.2.3").track("Opened", properties: { email: "caller@example.com" })
-    expect(calls.last[:body]["properties"]).to include("$release" => "1.2.3", "email" => "caller@example.com", "$url" => nil, "$referer" => nil)
+  it "passes caller properties and release metadata through unchanged" do
+    properties = { "$url" => "https://user:password@example.com/docs?token=private#secret",
+                   "$referer" => "https://search.example/private?token=private#secret",
+                   "$viewport" => "1234x987", "environment" => "business-value", "email" => "caller@example.com" }
+    build_client(mode: :audience, release: "1.2.3").track("Opened", properties: properties)
+    expect(calls.last[:body]["properties"]).to include(properties.merge("$release" => "1.2.3"))
   end
 
   it "ignores scalar, hash, batch, and invalid identity calls before validation" do
@@ -178,13 +155,12 @@ RSpec.describe Altertable::Client, "audience mode" do
       calls << { path: path, body: JSON.parse(body) }
       Altertable::Adapters::Response.new(calls.length == 1 ? 503 : 200, '{}', {})
     end
-    items = [{ event: "Retry", distinct_id: "ignored", properties: { "$url" => "https://site.example/?secret=yes" } }]
+    items = [{ event: "Retry", distinct_id: "ignored" }]
     expect { instance.track(items) }.to raise_error(Altertable::ApiError)
     expect(on_error).to have_received(:call).with(an_instance_of(Altertable::ApiError))
     instance.track(items)
     expect(calls.length).to eq(2)
     calls.each { |call| expect_audience(call[:body].first) }
-    expect(calls.last[:body].first["properties"]["$url"]).to eq("https://site.example/")
   end
 
   it "reports delivery failures and does not replay failed events into another client" do

@@ -47,8 +47,7 @@ Altertable.init('pk_live_abc123', environment: 'production', debug: true)
 
 Record an action performed by a user.
 
-`Altertable.track(event, distinct_id = nil, **options)`
-
+`Altertable.track(event, distinct_id = nil, **options)`  
 `Altertable.track(event_payload, **options)`  
 `Altertable.track(event_payloads, **options)`
 
@@ -72,36 +71,16 @@ Altertable.track([
 
 ### Audience Measurement
 
-Use an environment-bound Product Analytics API key and `mode: :audience` to collect events without client identity fields:
+Initialize with `mode: :audience` to collect events without identity fields:
 
 ```ruby
 Altertable.init('pk_live_abc123', mode: :audience)
-Altertable.track('Docs Opened', properties: {
-  '$url' => 'https://example.com/docs?campaign=launch',
-  section: 'installation'
-})
-Altertable.track([{ event: 'Docs Opened' }, { event: 'Install Copied' }])
+Altertable.track('Docs Opened', properties: { section: 'installation' })
 ```
 
-Product mode is the default. Create a new client or call `Altertable.init` again to
-change modes. Audience events omit user, anonymous, device, session, and environment
-fields across scalar, hash, and batch calls. The API key selects the environment;
-legacy unbound keys cannot be used. `identify` and `alias` return `nil` without
-sending requests, with warnings when `debug` is enabled.
-
-Audience mode removes `$viewport`, reduces `$url` to HTTP(S) origin plus path, and
-reduces `$referer` to origin. Invalid URLs become `nil`. Symbol and string property
-keys are supported. Custom properties and URL paths can still contain personal
-information; choose them accordingly.
-
-Gate calls on your application's consent decisions. Events are sent immediately;
-failed sends are not queued for replay. Audience delivery does not persist cookies
-or follow redirects; redirects are delivery failures. Faraday, HTTPX, and Net::HTTP
-are supported. Audience endpoints cannot include embedded HTTP credentials.
-
-The backend derives audience visitors from the request IP and User-Agent. For this
-server SDK, those describe your server, so these events cannot reliably measure
-distinct browser visitors. End-user request headers are not forwarded automatically.
+Audience events send only `event`, `timestamp`, and `properties`; distinct, anonymous,
+device, session, and environment fields are dropped. `identify` and `alias` are ignored.
+Requests come from your server, so they cannot distinguish browser visitors.
 
 ### Identifying Users
 
