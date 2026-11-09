@@ -88,7 +88,8 @@ RSpec.describe Altertable::Client, "audience mode" do
       product = build_client(mode: mode, environment: "staging")
       product.track("Opened", "user", anonymous_id: "anon", device_id: "device", mode: :audience,
                     properties: { "$url" => "https://site.example/?private=yes", "$viewport" => "100x100" })
-      expect(calls.last[:body]).to include("distinct_id" => "user", "anonymous_id" => "anon", "device_id" => "device", "environment" => "staging")
+      expect(calls.last[:body]).to include("distinct_id" => "user", "anonymous_id" => "anon", "device_id" => "device")
+      expect(calls.last[:body]).not_to have_key("environment")
       expect(calls.last[:body]).not_to have_key("mode")
       expect(calls.last[:body]["properties"]).to include("$url" => "https://site.example/?private=yes", "$viewport" => "100x100")
       expect { product.track({ event: "No ID" }) }.to raise_error(ArgumentError, /distinct_id/)
@@ -102,7 +103,8 @@ RSpec.describe Altertable::Client, "audience mode" do
 
   it "defaults to product mode" do
     build_client.track("Opened", "user")
-    expect(calls.last[:body]).to include("distinct_id" => "user", "environment" => "production")
+    expect(calls.last[:body]).to include("distinct_id" => "user")
+    expect(calls.last[:body]).not_to have_key("environment")
     expect(calls.last[:body]).not_to have_key("mode")
   end
 

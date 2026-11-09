@@ -29,6 +29,7 @@ module Altertable
   class Client
     DEFAULT_BASE_URL = T.let(T.unsafe(nil), String)
     DEFAULT_TIMEOUT = T.let(T.unsafe(nil), Integer)
+    # @deprecated Environments are selected by the Product Analytics API key.
     DEFAULT_ENVIRONMENT = T.let(T.unsafe(nil), String)
 
     sig { params(api_key: String, options: T::Hash[Symbol, T.untyped]).void }

@@ -9,6 +9,8 @@ module Altertable
   class Client
     DEFAULT_BASE_URL = "https://api.altertable.ai"
     DEFAULT_TIMEOUT = 5
+    # @deprecated Environments are selected by the Product Analytics API key.
+    # Retained so applications that reference the public constant continue to load.
     DEFAULT_ENVIRONMENT = "production"
 
     def initialize(api_key, options = {})
@@ -22,7 +24,6 @@ module Altertable
               end
       @api_key = api_key
       @base_url = options[:base_url] || DEFAULT_BASE_URL
-      @environment = options[:environment] || DEFAULT_ENVIRONMENT
       @timeout = options[:request_timeout] || DEFAULT_TIMEOUT
       @release = options[:release]
       @debug = options[:debug] || false
@@ -178,7 +179,6 @@ module Altertable
       payload = {
         timestamp: options[:timestamp] || default_timestamp,
         event: event,
-        environment: @environment,
         distinct_id: distinct_id,
         properties: {
           '$lib': "altertable-ruby",
@@ -201,7 +201,6 @@ module Altertable
     def identify_payload(user_id, options)
       payload = {
         timestamp: options[:timestamp] || default_timestamp,
-        environment: @environment,
         distinct_id: user_id,
         traits: options[:traits] || {}
       }
@@ -213,7 +212,6 @@ module Altertable
     def alias_payload(distinct_id, new_user_id, options)
       {
         timestamp: options[:timestamp] || default_timestamp,
-        environment: @environment,
         distinct_id: distinct_id,
         new_user_id: new_user_id
       }

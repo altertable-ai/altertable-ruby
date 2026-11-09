@@ -41,7 +41,6 @@ RSpec.describe Altertable::Client do
       expect(payload).to include(
         "event" => "signup",
         "distinct_id" => "u1",
-        "environment" => "production",
         "timestamp" => "2025-06-15T14:30:00.000Z"
       )
       expect(payload["properties"]).to include("plan" => "pro", "$lib" => "altertable-ruby")
@@ -75,7 +74,6 @@ RSpec.describe Altertable::Client do
       expect(payloads[0]).to include(
         "event" => "signup",
         "distinct_id" => "u1",
-        "environment" => "production",
         "timestamp" => "2025-06-15T14:30:00.000Z"
       )
       expect(payloads[0]["properties"]).to include("plan" => "pro", "$lib" => "altertable-ruby", "$lib_version" => Altertable::VERSION, "$release" => "1.2.3")
@@ -161,7 +159,6 @@ RSpec.describe Altertable::Client do
       payloads = adapter.calls.first[:body]
       expect(payloads[0]).to include(
         "distinct_id" => "u1",
-        "environment" => "production",
         "timestamp" => "2025-06-15T14:30:00.000Z"
       )
       expect(payloads[0]["traits"]).to include("email" => "a@example.com")
@@ -210,7 +207,6 @@ RSpec.describe Altertable::Client do
       expect(payloads[0]).to include(
         "distinct_id" => "anon-1",
         "new_user_id" => "u1",
-        "environment" => "production",
         "timestamp" => "2025-06-15T14:30:00.000Z"
       )
       expect(payloads[1]).to include("distinct_id" => "anon-2", "new_user_id" => "u2")
@@ -231,5 +227,23 @@ RSpec.describe Altertable::Client do
 
       expect(adapter.calls.first[:body].first).to include("distinct_id" => "anon-1", "new_user_id" => "u1")
     end
+  end
+
+  it "accepts deprecated environments without sending them for scalar, hash, and batch calls" do
+    deprecated = nil
+    expect { deprecated = described_class.new(api_key, environment: "staging", debug: true) }.not_to output.to_stderr
+    deprecated.instance_variable_set(:@adapter, adapter)
+
+    deprecated.track("Scalar", "u1", environment: "event")
+    deprecated.track({ event: "Hash", distinct_id: "u2", environment: "hash", properties: { environment: "business" } })
+    deprecated.track([{ event: "Batch", distinct_id: "u3", "environment" => "batch" }])
+    deprecated.identify([{ user_id: "u1", environment: "identify" }])
+    deprecated.alias([{ distinct_id: "old", new_user_id: "new", environment: "alias" }])
+
+    adapter.calls.each do |call|
+      payloads = call[:body].is_a?(Array) ? call[:body] : [call[:body]]
+      payloads.each { |payload| expect(payload).not_to have_key("environment") }
+    end
+    expect(adapter.calls[1][:body]["properties"]).to include("environment" => "business")
   end
 end
