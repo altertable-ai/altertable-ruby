@@ -24,7 +24,6 @@ module Altertable
               end
       @api_key = api_key
       @base_url = options[:base_url] || DEFAULT_BASE_URL
-      warn "[Altertable] The environment is determined by your API key. Remove the :environment option." if options.key?(:environment) && options[:debug]
       @timeout = options[:request_timeout] || DEFAULT_TIMEOUT
       @release = options[:release]
       @debug = options[:debug] || false

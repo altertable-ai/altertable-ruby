@@ -231,8 +231,7 @@ RSpec.describe Altertable::Client do
 
   it "accepts deprecated environments without sending them for scalar, hash, and batch calls" do
     deprecated = nil
-    expect { deprecated = described_class.new(api_key, environment: "staging", debug: true) }
-      .to output(/environment is determined by your API key/).to_stderr
+    expect { deprecated = described_class.new(api_key, environment: "staging", debug: true) }.not_to output.to_stderr
     deprecated.instance_variable_set(:@adapter, adapter)
 
     deprecated.track("Scalar", "u1", environment: "event")
