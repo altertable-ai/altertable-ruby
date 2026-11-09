@@ -60,7 +60,7 @@ module Altertable
         @client = client.with(
           timeout: { operation_timeout: @timeout },
           headers: @headers,
-          origin: @base_url
+          base_url: @base_url
         )
       end
 
