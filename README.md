@@ -137,22 +137,6 @@ You can configure the client by passing options during initialization.
 | `adapter` | Symbol | auto-detect | HTTP adapter to use (`:faraday`, `:httpx`, `:net_http`). |
 | `proxy` | String, Boolean | adapter default | Proxy to use for requests. Pass a URI string to force a specific proxy, or `false` to disable proxying (including any `HTTP_PROXY`/`HTTPS_PROXY` environment variables) for a fixed, trusted `base_url`. Unset by default: the `:faraday` and `:net_http` adapters auto-detect a proxy from the environment as they normally would; `:httpx` never does. |
 
-### Migrating from `environment`
-
-Create or select a Product Analytics API key bound to the target environment, then
-remove `environment:` from initialization. The SDK still accepts the option during
-the transition, including hash and batch event inputs, but ignores it and omits the
-top-level field from every request. A legacy unbound key cannot deliver after this
-migration because the backend has no environment to select.
-
-```ruby
-# Before
-Altertable.init('legacy-key', environment: 'staging')
-
-# After
-Altertable.init('staging-environment-bound-key')
-```
-
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).

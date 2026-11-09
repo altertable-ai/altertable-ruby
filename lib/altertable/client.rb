@@ -219,26 +219,10 @@ module Altertable
     end
 
     def post(path, payload)
-      res = @adapter.post(path, body: remove_deprecated_environment(payload).to_json)
+      res = @adapter.post(path, body: payload.to_json)
       handle_response(res)
     rescue StandardError => e
       handle_error(e)
-    end
-
-    # Keep accepting legacy payload hashes, but never let their top-level routing
-    # field reach the API. Properties named "environment" remain event data.
-    def remove_deprecated_environment(payload)
-      case payload
-      when Array
-        payload.map { |item| remove_deprecated_environment(item) }
-      when Hash
-        payload.dup.tap do |item|
-          item.delete(:environment)
-          item.delete("environment")
-        end
-      else
-        payload
-      end
     end
 
     def handle_response(res)
