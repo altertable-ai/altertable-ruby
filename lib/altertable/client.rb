@@ -23,6 +23,7 @@ module Altertable
               end
       @api_key = api_key
       @base_url = options[:base_url] || DEFAULT_BASE_URL
+      validate_audience_endpoint! if @mode == :audience
       @environment = options[:environment] || DEFAULT_ENVIRONMENT
       @timeout = options[:request_timeout] || DEFAULT_TIMEOUT
       @release = options[:release]
@@ -85,6 +86,15 @@ module Altertable
 
       warn "[Altertable] identify() and alias() calls are ignored in audience mode." if @debug
       true
+    end
+
+    def validate_audience_endpoint!
+      endpoint = URI.parse(@base_url)
+      return unless endpoint.user || endpoint.password
+
+      raise ConfigurationError, "Audience endpoints cannot include credentials"
+    rescue URI::InvalidURIError
+      raise ConfigurationError, "Audience endpoint must be a valid URL"
     end
 
     def select_adapter(name, options)

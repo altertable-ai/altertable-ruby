@@ -51,6 +51,9 @@ module Altertable
     sig { returns(T::Boolean) }
     def reject_identity_call?; end
 
+    sig { void }
+    def validate_audience_endpoint!; end
+
     sig { params(payload: T::Hash[Symbol, T.untyped]).returns(T::Hash[Symbol, T.untyped]) }
     def audience_payload(payload); end
 

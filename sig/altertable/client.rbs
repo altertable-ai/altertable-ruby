@@ -31,6 +31,7 @@ module Altertable
     private
 
     def reject_identity_call?: () -> bool
+    def validate_audience_endpoint!: () -> void
     def audience_payload: (::Hash[Symbol, untyped] payload) -> ::Hash[Symbol, untyped]
     def sanitize_url: (untyped value, ?origin_only: bool) -> String?
 

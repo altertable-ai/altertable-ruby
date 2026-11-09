@@ -95,7 +95,9 @@ keys are supported. Custom properties and URL paths can still contain personal
 information; choose them accordingly.
 
 Gate calls on your application's consent decisions. Events are sent immediately;
-failed sends are not queued for replay. Faraday, HTTPX, and Net::HTTP are supported.
+failed sends are not queued for replay. Audience delivery does not persist cookies
+or follow redirects; redirects are delivery failures. Faraday, HTTPX, and Net::HTTP
+are supported. Audience endpoints cannot include embedded HTTP credentials.
 
 The backend derives audience visitors from the request IP and User-Agent. For this
 server SDK, those describe your server, so these events cannot reliably measure
