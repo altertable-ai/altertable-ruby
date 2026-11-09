@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/altertable-ai/altertable-ruby/compare/altertable/v1.3.0...altertable/v1.4.0) (2026-11-09)
+
+
+### Features
+
+* add audience collection mode ([#55](https://github.com/altertable-ai/altertable-ruby/issues/55)) ([7ecb88c](https://github.com/altertable-ai/altertable-ruby/commit/7ecb88cd5d8951c35b811dcde3577d7233112856))
+* deprecate analytics environment routing ([#56](https://github.com/altertable-ai/altertable-ruby/issues/56)) ([020e3bf](https://github.com/altertable-ai/altertable-ruby/commit/020e3bf406bdacd805dd33d8b5879f34120f6f5d))
+
+
+### Bug Fixes
+
+* **httpx:** resolve request paths against the base URL ([#57](https://github.com/altertable-ai/altertable-ruby/issues/57)) ([f3473fb](https://github.com/altertable-ai/altertable-ruby/commit/f3473fbd4710ce79eb0092bfefbd2f48da488014))
+
 ## [Unreleased]
 
 ### Features
