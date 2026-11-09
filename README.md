@@ -47,7 +47,7 @@ Altertable.init('pk_live_abc123', environment: 'production', debug: true)
 
 Record an action performed by a user.
 
-`Altertable.track(event, distinct_id, **options)`  
+`Altertable.track(event, distinct_id = nil, **options)`  
 `Altertable.track(event_payload, **options)`  
 `Altertable.track(event_payloads, **options)`
 
@@ -68,6 +68,19 @@ Altertable.track([
   { event: 'login', distinct_id: 'user_2', timestamp: '2025-06-15T14:30:00.000Z' }
 ])
 ```
+
+### Audience Measurement
+
+Initialize with `mode: :audience` to collect events without identity fields:
+
+```ruby
+Altertable.init('pk_live_abc123', mode: :audience)
+Altertable.track('Docs Opened', properties: { section: 'installation' })
+```
+
+Audience events send only `event`, `timestamp`, and `properties`; distinct, anonymous,
+device, session, and environment fields are dropped. `identify` and `alias` are ignored.
+Requests come from your server, so they cannot distinguish browser visitors.
 
 ### Identifying Users
 
@@ -114,7 +127,8 @@ You can configure the client by passing options during initialization.
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `environment` | String | `"production"` | Environment name (e.g., `production`, `development`). |
+| `mode` | Symbol, String | `:product` | Collection mode: `:product` or `:audience`. Fixed for the client lifetime. |
+| `environment` | String | `"production"` | Product environment name (e.g., `production`, `development`). Omitted in audience mode; the API key selects its environment. |
 | `base_url` | String | `"https://api.altertable.ai"` | Base URL for API requests. |
 | `request_timeout` | Integer | `5` | Request timeout in seconds. |
 | `release` | String | `nil` | Application release version (e.g., commit hash). |
