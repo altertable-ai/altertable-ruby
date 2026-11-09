@@ -69,11 +69,10 @@ RSpec.describe Altertable::Client, "audience mode" do
     expect_audience(calls.last[:body])
   end
 
-  it "warns about ignored identity calls when debug logging is enabled" do
+  it "ignores identity calls silently, even with debug enabled" do
     debug_client = build_client(mode: :audience, debug: true)
-    expect { debug_client.identify("user") }.to output(/ignored in audience mode/).to_stderr
-    expect { debug_client.alias("old", "new") }.to output(/ignored in audience mode/).to_stderr
-    expect { client.identify("user") }.not_to output.to_stderr
+    expect { debug_client.identify("user") }.not_to output.to_stderr
+    expect { debug_client.alias("old", "new") }.not_to output.to_stderr
   end
 
   it "validates events and whole batches without sending partial batches" do

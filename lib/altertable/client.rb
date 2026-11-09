@@ -80,10 +80,7 @@ module Altertable
     private
 
     def reject_identity_call?
-      return false unless @mode == :audience
-
-      warn "[Altertable] identify() and alias() calls are ignored in audience mode." if @debug
-      true
+      @mode == :audience
     end
 
     def select_adapter(name, options)
